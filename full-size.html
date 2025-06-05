@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CSS Page-Flip (Semantic)</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+
+      /* — FRONT PAGE — */
+
+      /* Wrapper that handles the front page’s rotation */
+      .page-wrapper {
+        position: absolute;
+        z-index: 2;
+        transform-origin: 1315px 500px;
+        transform: translate(-1030px, -500px) rotate(-32deg);
+        transition: transform 1s, transform-origin 1s;
+      }
+
+      /* The “static” front page area (clipping) */
+      .page {
+        width: 1285px;
+        height: 1388px;
+        overflow: hidden;
+      }
+      .page-front-panel,
+      .page-back-panel {
+        position: relative;
+        width: 285px;
+        height: 388px;
+        transition: transform 1s, transform-origin 1s;
+      }
+      /* The panel that actually flips away */
+      .page-front-panel {
+        background-color: #3498db; /* blue placeholder */
+        transform-origin: 285px 0;
+        transform: translate(1030px, 500px) rotate(32deg);
+      }
+
+      /* Gradient shadow on the peeling edge */
+      .page-front-panel .edge-shadow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 388px;
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.25), transparent);
+      }
+
+      /* — UNDERLYING PAGE — */
+
+      /* The content of that page */
+      .page-underneath .page-underneath-panel {
+        position: absolute;
+        z-index: 1;
+        width: 285px;
+        height: 388px;
+        background-color: #2ecc71; /* green placeholder */
+      }
+
+      /* — BACK OF FRONT PAGE — */
+
+      .page-back-panel {
+        background-color: #fff;
+        box-shadow: 0 0 11px rgba(0, 0, 0, 0.5);
+        transform-origin: 0 0;
+        transform: translate(1255px, 500px) rotate(-32deg);
+      }
+      .page-back-panel .edge-shadow {
+        float: right;
+        width: 9px;
+        height: 500px;
+        background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.2));
+      }
+
+      /* — SHADOW OVERLAYS — */
+
+      .shadow-wrapper {
+        position: absolute;
+        width: 285px;
+        height: 388px;
+        overflow: hidden;
+        z-index: 3;
+      }
+      .shadow-front {
+        position: absolute;
+        transform-origin: 70px 500px;
+        transform: translate(215px, -500px) rotate(-32deg) translate(40px, 0);
+        transition: transform 1s, transform-origin 1s;
+      }
+      .shadow-front .gradient {
+        width: 25px;
+        height: 1000px;
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.25), transparent);
+        transition: width 1s;
+      }
+
+      .shadow-back-wrapper {
+        opacity: 1;
+        transition: opacity 0.5s;
+      }
+      .shadow-back {
+        position: absolute;
+        transform-origin: 45px 500px;
+        transform: translate(240px, -500px) rotate(-32deg);
+        transition: transform 1s, transform-origin 1s;
+      }
+      .shadow-back .gradient {
+        width: 15px;
+        height: 1000px;
+        background: linear-gradient(to left, rgba(0, 0, 0, 0.18), transparent);
+      }
+
+      /* — HOVER / ACTIVE STATES — */
+
+      #page-flip-container:hover .page-wrapper {
+        transform-origin: 1570px 500px;
+        transform: translate(-1285px, -500px) rotate(0deg);
+      }
+      #page-flip-container:hover .page-front-panel {
+        transform: translate(1285px, 500px) rotate(0deg);
+      }
+      #page-flip-container:hover .page-wrapper {
+        transform-origin: 1570px 500px;
+        transform: translate(-1285px, -500px) rotate(0deg);
+      }
+      #page-flip-container:hover .page-back-panel {
+        transform-origin: 0 0;
+        transform: translate(1000px, 500px) rotate(0deg);
+      }
+
+      #page-flip-container:hover .shadow-front {
+        transform-origin: 325px 500px;
+        transform: translate(-40px, -500px) rotate(0deg) translate(40px, 0);
+      }
+      #page-flip-container:hover .shadow-front .gradient {
+        width: 11px;
+      }
+      #page-flip-container:hover .shadow-back-wrapper {
+        opacity: 0;
+      }
+      #page-flip-container:hover .shadow-back {
+        transform-origin: 300px 500px;
+        transform: translate(-15px, -500px) rotate(0deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="page-flip-container">
+      <!-- FRONT PAGE -->
+      <div class="page-wrapper front">
+        <div class="page">
+          <div class="page-panel page-front-panel">
+            <div class="edge-shadow"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK SIDE OF FRONT PAGE -->
+      <div class="page-wrapper back">
+        <div class="page">
+          <div class="page-panel page-back-panel">
+            <div class="edge-shadow"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UNDERLYING PAGE -->
+      <div class="page-underneath">
+        <div class="page-underneath-panel"></div>
+      </div>
+
+      <!-- SHADOW EFFECTS -->
+      <div class="shadow-wrapper">
+        <div class="shadow-front">
+          <div class="gradient"></div>
+        </div>
+      </div>
+      <div class="shadow-wrapper shadow-back-wrapper">
+        <div class="shadow-back">
+          <div class="gradient"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

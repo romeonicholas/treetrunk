@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Press Animation</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #333; /* Dark background to see elements clearly */
+        /* Ensure body can contain absolutely positioned elements if needed for overflow */
+        position: relative;
+        /* For this specific example, we want to see the blue box start outside the "viewport"
+               So, no overflow:hidden on body unless you only want to see what's in viewport.
+               The "viewport" div will represent the green box from your diagram. */
+      }
+
+      #static-image {
+        width: 2160px;
+        height: 3840px;
+        background-color: red;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      #moving-image {
+        width: 2160px;
+        height: 3840px;
+        background-color: blue;
+        position: absolute;
+        top: 0; /* Initial top/left before transform */
+        left: 0; /* Initial top/left before transform */
+        z-index: 2; /* To appear on top of or slide next to static-image */
+
+        /* Set transform origin to top-left for rotation */
+        /* transform-origin: top left; */
+
+        /* Initial state: below and to the right, rotated 90deg */
+        /* Translate moves the (0,0) origin point of this element */
+        /* Then rotate happens around that new (0,0) point based on transform-origin */
+        /* transform: translateX(2160px) translateY(3840px) rotate(45deg); */
+
+        /* transition: transform 1s ease-in-out;  */
+      }
+
+      #moving-image.animate {
+        /* Ending state: to the left of viewport, 0deg rotation */
+        transform: translateX(-2160px) translateY(0px) rotate(45deg);
+      }
+
+      #moving-image-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: bottom left;
+        width: 2160px;
+        height: 8160px;
+        z-index: 2;
+        background-color: green;
+        transform: translateY(-4320px) rotate(90deg);
+        /* transition: transform 1s ease-in-out; */
+      }
+
+      #moving-image-container.animate {
+        /* Ending state: to the left of viewport, 0deg rotation */
+        transform: translateX(4320px) rotate(0deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="static-image"></div>
+
+    <!-- The moving image is a sibling to the viewport, positioned absolutely relative to the body -->
+    <div id="moving-image-container">
+      <!-- <div id="moving-image"></div> -->
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const movingImage = document.getElementById("moving-image-container");
+
+        if (movingImage) {
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "d" || event.key === "D") {
+              movingImage.classList.toggle("animate");
+            }
+          });
+        } else {
+          console.error('Element with ID "moving-image" not found.');
+        }
+      });
+    </script>
+  </body>
+</html>

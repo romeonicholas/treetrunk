@@ -273,18 +273,15 @@ div {
   z-index: 20;
 }
 
-.spinner {
-  position: absolute;
-  top: 165px;
-  left: -160px;
-  width: 1300px;
+#spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  border: 10px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #photo-preview-background {
@@ -300,4 +297,14 @@ div {
   bottom: 0;
   left: 0;
   width: 100%;
+}
+
+#qr-code {
+    position: absolute;
+    top: 1719px;
+    left: 255px;
+    width: 500px;
+    height: 500px;
+    z-index: 100;
+    background: white;
 }

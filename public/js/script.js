@@ -306,6 +306,8 @@ function showPhotoPreviewScreen() {
     "photo-preview-background"
   );
   photoPreviewBackground.src = figureData[figureIndex].selfie;
+  const spinner = document.getElementById("spinner");
+  spinner.style.display = "none";
 
   const selfieCutout = document.getElementById("selfie-cutout");
   selfieCutout.src = figureData[figureIndex].cutout;
@@ -325,7 +327,7 @@ function showPhotoPreviewScreen() {
       })
       .then(function (stream) {
         video.srcObject = stream;
-        webcamStream = stream; // Store the stream
+        webcamStream = stream; 
       })
       .catch(function (err) {
         console.log("Something went wrong!");
@@ -354,11 +356,12 @@ function capturePhoto() {
   const photoDataUrl = canvasElement.toDataURL("image/jpeg");
 
   stopWebcam();
-
+  document.getElementById("spinner").style.display = "block";
+      
   return fetch("/save-photo", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: photoDataUrl }),
+    body: JSON.stringify({ image: photoDataUrl, figureIndex }),
   })
     .then((res) => res.json())
     .then((data) => {
@@ -398,16 +401,16 @@ function generateQRCode(filename) {
 }
 
 async function showPhotoReviewScreen(latestPhotoFilename) {
-  // const photoPreviewScreen = document.getElementById("photo-preview-screen");
-  // const photoReview = document.getElementById("photo-review-screen");
-  const editedPhoto = document.getElementById("edited-photo");
+  const photoReviewBackground = document.getElementById(
+    "photo-review-background"
+  );
+  photoReviewBackground.src = figureData[figureIndex].selfieReview;
 
-  // photoPreviewScreen.classList.toggle("inactive");
-  // photoReview.classList.toggle("show");
+  const editedPhoto = document.getElementById("edited-photo");
 
   try {
     const photoPath = await latestPhotoFilename;
-    const imageUrl = `/unedited-photos/${photoPath}`;
+    const imageUrl = `/editedUserPhotos/${photoPath}`;
     editedPhoto.src = imageUrl;
     generateQRCode(`localhost:3000${imageUrl}`);
   } catch (error) {
@@ -489,17 +492,16 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      // Go back to last page of comic book screen
       transitionToScreen(photoPreviewScreen, comicBook);
       currentState = AppState.COMIC_BOOK;
     },
-    right: () => {
-      // Maybe do nothing or same as enter
-    },
+    right: () => {},
     enter: async () => {
       currentState = AppState.PHOTO_COUNTDOWN;
       await showCountdownTimer();
+
       latestPhotoFilename = await capturePhoto();
+
       photoPreviewScreen.classList.remove("active");
       const photoReviewScreen = document.getElementById("photo-review-screen");
       photoReviewScreen.classList.add("active");
@@ -517,33 +519,27 @@ const stateHandlers = {
 
   [AppState.PHOTO_REVIEW]: {
     left: () => {
-      // Go back to photo booth
-      const photoPreviewScreen = document.getElementById(
-        "photo-preview-screen"
-      );
-      const photoReview = document.getElementById("photo-review-screen");
-      photoPreviewScreen.classList.remove("inactive");
-      photoReview.classList.remove("show");
+      currentState = AppState.PHOTO_PREVIEW;
+      showPhotoPreviewScreen();
+      transitionToScreen(photoReview, photoPreviewScreen);
       currentState = AppState.PHOTO_BOOTH;
     },
     right: () => {
-      // Go to figure select
       const figureSelectScreen = document.getElementById(
         "figure-select-screen"
       );
       const photoReview = document.getElementById("photo-review-screen");
-      figureSelectScreen.classList.remove("inactive");
-      photoReview.classList.remove("show");
+      photoReview.classList.remove("active");
+      figureSelectScreen.classList.add("active");
       currentState = AppState.FIGURE_SELECT;
     },
     enter: () => {
-      // Same as right - go to figure select
       const figureSelectScreen = document.getElementById(
         "figure-select-screen"
       );
       const photoReview = document.getElementById("photo-review-screen");
-      figureSelectScreen.classList.remove("inactive");
-      photoReview.classList.remove("show");
+      photoReview.classList.remove("active");
+      figureSelectScreen.classList.add("active");
       currentState = AppState.FIGURE_SELECT;
     },
   },
@@ -560,22 +556,13 @@ window.addEventListener("keydown", async (e) => {
 
   switch (e.key) {
     case "ArrowLeft":
-      console.log("Left key pressed");
-      console.log("Current state:", currentState);
       handler.left();
-      console.log("Updated state:", currentState);
       break;
     case "ArrowRight":
-      console.log("Right key pressed");
-      console.log("Current state:", currentState);
       handler.right();
-      console.log("Updated state:", currentState);
       break;
     case "Enter":
-      console.log("Enter key pressed");
-      console.log("Current state:", currentState);
       handler.enter();
-      console.log("Updated state:", currentState);
       break;
     default:
       break;

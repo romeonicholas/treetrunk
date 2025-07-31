@@ -15,6 +15,7 @@ const figureData = [
       "/images/pages/chouteau/page6Chouteau.webp",
     ],
     selfie: "/images/pages/chouteau/selfieChouteauTest.webp",
+    selfieReview: "/images/pages/chouteau/selfieChouteauTestReview.png",
   },
   {
     name: "Harjo",

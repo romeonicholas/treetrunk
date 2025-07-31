@@ -23,8 +23,16 @@ app.post("/save-photo", (req, res) => {
   if (!matches) return res.status(400).send("Invalid image data");
   const buffer = Buffer.from(matches[1], "base64");
   const filename = `${Date.now()}.jpg`;
-  const originalFilepath = path.join(__dirname, "public/originalUserPhotos", filename);
-  const editedFilepath = path.join(__dirname, "public/editedUserPhotos", filename);
+  const originalFilepath = path.join(
+    __dirname,
+    "public/originalUserPhotos",
+    filename
+  );
+  const editedFilepath = path.join(
+    __dirname,
+    "public/editedUserPhotos",
+    filename
+  );
 
   fs.mkdirSync(path.dirname(originalFilepath), { recursive: true });
 
@@ -38,13 +46,16 @@ app.post("/save-photo", (req, res) => {
 
     // Pass both file paths to PowerShell
     const psScript = `powershell.exe -File ./edit-photo.ps1 "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
-    exec(psScript, (error, stdout, stderr) => {
-      if (error) {
-        console.error("PowerShell error:", error);
-        return res.status(500).json({ error: error.message });
+    exec(
+      `powershell -ExecutionPolicy Bypass -File "${psScript}"`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("PowerShell error:", error);
+          return res.status(500).json({ error: error.message });
+        }
+        res.json({ filename });
       }
-      res.json({ filename });
-    });
+    );
   });
 });
 

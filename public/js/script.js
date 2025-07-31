@@ -327,7 +327,7 @@ function showPhotoPreviewScreen() {
       })
       .then(function (stream) {
         video.srcObject = stream;
-        webcamStream = stream; 
+        webcamStream = stream;
       })
       .catch(function (err) {
         console.log("Something went wrong!");
@@ -357,7 +357,7 @@ function capturePhoto() {
 
   stopWebcam();
   document.getElementById("spinner").style.display = "block";
-      
+
   return fetch("/save-photo", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -544,6 +544,87 @@ const stateHandlers = {
     },
   },
 };
+
+// WebSocket connection for Phidget button presses
+let ws = null;
+
+function initializeWebSocket() {
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${window.location.host}`;
+
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = function () {
+    console.log("Connected to WebSocket server for button input");
+  };
+
+  ws.onmessage = function (event) {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === "button-press") {
+        console.log(`Received button press: ${data.action}`);
+        handleInput(data.action);
+      }
+    } catch (error) {
+      console.error("Error parsing WebSocket message:", error);
+    }
+  };
+
+  ws.onclose = function () {
+    console.log("WebSocket connection closed");
+    // Reconnect after a delay
+    setTimeout(initializeWebSocket, 1000);
+  };
+
+  ws.onerror = function (error) {
+    console.error("WebSocket error:", error);
+  };
+}
+
+// Your input handler function
+async function handleInput(action) {
+  const handler = stateHandlers[currentState];
+
+  if (!handler) {
+    console.error(`No handler for state: ${currentState}`);
+    return;
+  }
+
+  console.log(`Handling action '${action}' in state '${currentState}'`);
+
+  switch (action) {
+    case "left":
+      handler.left();
+      break;
+    case "right":
+      handler.right();
+      break;
+    case "enter":
+      handler.enter();
+      break;
+    default:
+      console.log("Unknown action:", action);
+      break;
+  }
+}
+
+// Keep keyboard fallback for development
+window.addEventListener("keydown", async (e) => {
+  switch (e.key) {
+    case "ArrowLeft":
+      handleInput("left");
+      break;
+    case "ArrowRight":
+      handleInput("right");
+      break;
+    case "Enter":
+      handleInput("enter");
+      break;
+  }
+});
+
+// Initialize WebSocket when page loads
+window.addEventListener("load", initializeWebSocket);
 
 // State Management //
 window.addEventListener("keydown", async (e) => {

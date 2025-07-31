@@ -3,6 +3,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
 import { exec } from "child_process";
+import dgram from "dgram"; // Use import instead of require
+import { WebSocketServer } from "ws";
+import { createServer } from "http";
 
 import figureData from "./public/js/figureData.js";
 
@@ -12,8 +15,35 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: "10mb" }));
+// Create HTTP server for both Express and WebSocket
+const httpServer = createServer(app);
 
+// WebSocket setup
+const wss = new WebSocketServer({ server: httpServer });
+let connectedClients = [];
+
+wss.on("connection", (ws) => {
+  console.log("Client connected to WebSocket");
+  connectedClients.push(ws);
+
+  ws.on("close", () => {
+    console.log("Client disconnected from WebSocket");
+    connectedClients = connectedClients.filter((client) => client !== ws);
+  });
+});
+
+// Function to send button press to all connected clients
+function sendButtonPressToClients(action) {
+  const message = JSON.stringify({ type: "button-press", action });
+  connectedClients.forEach((client) => {
+    if (client.readyState === 1) {
+      // WebSocket.OPEN
+      client.send(message);
+    }
+  });
+}
+
+app.use(express.json({ limit: "10mb" }));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
@@ -59,6 +89,52 @@ app.get("/", (request, response) => {
   response.render("index", { figureData: figureData });
 });
 
-app.listen(PORT, () => {
+// UDP Server for Phidget messages
+const udpServer = dgram.createSocket("udp4");
+
+udpServer.on("listening", () => {
+  const address = udpServer.address();
+  console.log(`UDP Server listening on ${address.address}:${address.port}`);
+});
+
+udpServer.on("message", (message, remote) => {
+  try {
+    const data = JSON.parse(message.toString());
+    const { button, state } = data;
+
+    console.log(`Received UDP message: button ${button}, state ${state}`);
+    handlePhidgetButton(button, state);
+  } catch (err) {
+    console.error("Invalid UDP message:", err.message);
+  }
+});
+
+udpServer.bind(5005, "0.0.0.0");
+
+function handlePhidgetButton(button, state) {
+  if (state !== 1) return; // only trigger on press, not release
+
+  let action;
+  switch (button) {
+    case 1:
+      action = "left";
+      break;
+    case 2:
+      action = "right";
+      break;
+    case 3:
+      action = "enter";
+      break;
+    default:
+      console.warn("Unknown button:", button);
+      return;
+  }
+
+  console.log(`Sending action '${action}' to clients`);
+  sendButtonPressToClients(action);
+}
+
+// Use httpServer instead of app.listen to support both Express and WebSocket
+httpServer.listen(PORT, () => {
   console.log(`👋 Started server on port ${PORT}`);
 });

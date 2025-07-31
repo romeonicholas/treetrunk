@@ -36,26 +36,22 @@ app.post("/save-photo", (req, res) => {
 
   fs.mkdirSync(path.dirname(originalFilepath), { recursive: true });
 
-  // Get cutout path from figureData
   const figure = figureData[figureIndex];
   if (!figure) return res.status(400).send("Invalid figure index");
   const cutoutPath = path.join(__dirname, "public", figure.cutout);
+  const script = `powershell.exe -File ./edit-photo.ps1 "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
+  const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
 
   fs.writeFile(originalFilepath, buffer, (err) => {
     if (err) return res.status(500).send("Failed to save");
 
-    // Pass both file paths to PowerShell
-    const psScript = `powershell.exe -File ./edit-photo.ps1 "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
-    exec(
-      `powershell -ExecutionPolicy Bypass -File "${psScript}"`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("PowerShell error:", error);
-          return res.status(500).json({ error: error.message });
-        }
-        res.json({ filename });
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error("PowerShell error:", error);
+        return res.status(500).json({ error: error.message });
       }
-    );
+      res.json({ filename });
+    });
   });
 });
 

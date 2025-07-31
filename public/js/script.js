@@ -626,30 +626,6 @@ window.addEventListener("keydown", async (e) => {
 // Initialize WebSocket when page loads
 window.addEventListener("load", initializeWebSocket);
 
-// State Management //
-window.addEventListener("keydown", async (e) => {
-  const handler = stateHandlers[currentState];
-
-  if (!handler) {
-    console.error(`No handler for state: ${currentState}`);
-    return;
-  }
-
-  switch (e.key) {
-    case "ArrowLeft":
-      handler.left();
-      break;
-    case "ArrowRight":
-      handler.right();
-      break;
-    case "Enter":
-      handler.enter();
-      break;
-    default:
-      break;
-  }
-});
-
 function transitionToScreen(currentScreen, newScreen) {
   currentScreen.classList.remove("active");
   newScreen.classList.add("active");

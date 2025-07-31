@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="icon" href="data:," />
     <script src="/js/qrcodegen.js" defer></script>
-    <script src="/js/script.js" defer></script>
+    <script src="/js/script.js" type="module" defer>
+      css
+    </script>
   </head>
 
-  <body>
+  <body class="has-background">
     <%- include('figures') %> <%- include('comic') %> <%-
-    include('photopreview') %> <%- include('photoreview') %>
+    include('photoPreview') %> <%- include('photoReview') %>
   </body>
 </html>

@@ -1,8 +1,11 @@
-<div id="photo-booth-screen" class="photo-booth-screen has-background">
+<div id="photo-preview-screen" class="photo-preview-screen app-screen">
+  <img id="photo-preview-background" />
   <canvas id="canvas-element"> </canvas>
   <div id="video-container" class="video-container">
+    <img id="selfie-cutout" />
     <div class="countdown" id="countdown"></div>
-    <video autoplay="true" id="video-element" class="video-element"></video>
+    <video autoplay="true" id="video-element"></video>
     <div class="spinner" id="spinner"></div>
   </div>
+  <img src="/images/ui/photoFooter.png" id="photo-footer" class="footer" />
 </div>

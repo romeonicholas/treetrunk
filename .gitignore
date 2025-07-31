@@ -1,2 +1,4 @@
 node_modules
 .DS_Store
+/public/unedited-photos
+/public/edited-photos

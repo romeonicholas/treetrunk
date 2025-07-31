@@ -1,67 +1,23 @@
-<div id="figure-select-screen" class="has-background">
+<div id="figure-select-screen" class="has-background app-screen active">
   <div id="figure-carousel" class="figure-carousel-container show">
+    <% figureData.forEach((figure, index) => { %>
     <div class="figure-transform-wrapper">
       <div class="figure-scale-wrapper">
-        <img src="/images/cutoutMankiller.png" />
+        <img src="<%= figure.cutout %>" />
       </div>
     </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutChouteau.png" />
-      </div>
-    </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutHarjo.png" />
-      </div>
-    </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutHerrington.png" />
-      </div>
-    </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutStandingBear.png" />
-      </div>
-    </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutPlaceholder1.png" />
-      </div>
-    </div>
-    <div class="figure-transform-wrapper">
-      <div class="figure-scale-wrapper">
-        <img src="/images/cutoutPlaceholder2.png" />
-      </div>
-    </div>
+    <% }); %>
   </div>
 
   <div id="text-carousel" class="text-carousel-container show">
+    <% figureData.forEach((figure, index) => { %>
     <div class="carousel-text">
-      <img src="/images/carouselText3.png" />
+      <img src="<%= figure.text %>" />
     </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText2.png" />
-    </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText3.png" />
-    </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText2.png" />
-    </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText3.png" />
-    </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText2.png" />
-    </div>
-    <div class="carousel-text">
-      <img src="/images/carouselText3.png" />
-    </div>
+    <% }); %>
   </div>
 
-  <div id="figure-footer" class="footer show">
-    <img src="/images/figurebuttonfooter.jpg" />
+  <div id="figure-footer" class="footer">
+    <img src="/images/ui/figureFooter.png" />
   </div>
 </div>

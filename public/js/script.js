@@ -1,22 +1,28 @@
+import figureData from "./figureData.js";
+
 // Elements
-const figureFooter = document.getElementById("figure-footer");
-const carousel = document.getElementById("figure-carousel");
-const comicBook = document.getElementById("comic-book");
-// const comicCover = document.getElementById("comic-cover");
+const texts = Array.from(document.querySelectorAll(".carousel-text"));
 const figures = Array.from(
   document.querySelectorAll(".figure-transform-wrapper")
 );
-const texts = Array.from(document.querySelectorAll(".carousel-text"));
+const figureSelectScreen = document.getElementById("figure-select-screen");
+const comicBook = document.getElementById("comic-book");
+const photoPreviewScreen = document.getElementById("photo-preview-screen");
 
 const count = figures.length;
-let current = 0;
+let figureIndex = 0;
 
-// Audio
-const interactSFX = new Audio("/audio/select.mp3");
-const backgroundSFX = new Audio("/audio/background.mp3");
+let currentPage = 0;
+
+// Audio //
+
+const interactSFX = new Audio("/audio/clickButton.wav");
+const coverpageSFX = new Audio("/audio/showCover.wav");
+
+const pageFlipSFX = new Audio("/audio/pageFlip.mp3");
+
 const countdownSFX = new Audio("/audio/countdownBeep.mp3");
-const photoSFX = new Audio("/audio/photo.mp3");
-const coverpageSFX = new Audio("/audio/coverpage.mp3");
+const photoSFX = new Audio("/audio/photoSnap.mp3");
 
 function playSFX(sfx) {
   sfx.currentTime = 0;
@@ -28,17 +34,7 @@ function playInteractSFX() {
   interactSFX.play();
 }
 
-function playBackgroundSFX() {
-  backgroundSFX.currentTime = 0;
-  backgroundSFX.loop = true;
-  backgroundSFX.volume = 0.5;
-  backgroundSFX.play();
-}
-
-function stopBackgroundSFX() {
-  backgroundSFX.pause();
-  backgroundSFX.currentTime = 0;
-}
+// Carousel Functionality //
 
 function getDiff(i, center) {
   let diff = i - center;
@@ -48,8 +44,9 @@ function getDiff(i, center) {
 }
 
 const Direction = {
-  LEFT: "left",
-  RIGHT: "right",
+  LEFT: Symbol("left"),
+  RIGHT: Symbol("right"),
+  NONE: Symbol("none"), // For first page load
 };
 
 const TransformClass = {
@@ -169,7 +166,7 @@ const carouselFigureClassMap = [
 
 function applyFigureClasses(
   figure,
-  direction,
+  direction = Direction.NONE,
   translateClass,
   focusClass,
   scaleClass,
@@ -185,9 +182,10 @@ function applyFigureClasses(
   } else if (direction === Direction.RIGHT) {
     figure.classList.add(rightEase.transform);
     figure.firstElementChild.classList.add(rightEase.scale);
+  } else if (direction === Direction.NONE) {
+    console.log("Applying startup classes");
   } else {
     console.error("Invalid direction provided to applyFigureClasses");
-    return;
   }
 }
 
@@ -196,7 +194,7 @@ function updateCarousel(direction) {
     figure.classList.remove(...transformClasses);
     figure.firstElementChild.classList.remove(...scaleClasses);
 
-    const diff = getDiff(i, current);
+    const diff = getDiff(i, figureIndex);
     const mapIndex = Math.max(-3, Math.min(3, diff)) + 3;
     const config = carouselFigureClassMap[mapIndex];
 
@@ -212,44 +210,67 @@ function updateCarousel(direction) {
   });
 
   texts.forEach((text, i) => {
-    text.classList.remove("off-left-text", "center-text", "right-text");
+    text.classList.remove("off-left-text", "center-text", "off-right-text");
 
-    const diff = getDiff(i, current);
-    if (diff <= -1) text.classList.add("off-left-text");
-    else if (diff === 0) text.classList.add("center-text");
-    else if (diff >= 1) text.classList.add("right-text");
+    const diff = getDiff(i, figureIndex);
+    if (diff <= -1) text.classList.add("off-left-text", "ease-out-text");
+    else if (diff === 0) text.classList.add("center-text", "ease-in-text");
+    else if (diff >= 1) text.classList.add("off-right-text", "ease-out-text");
   });
 }
 
 function prev() {
   playInteractSFX();
-  current = (current - 1 + count) % count;
+  figureIndex = (figureIndex - 1 + count) % count;
   updateCarousel(Direction.LEFT);
 }
 
 function next() {
   playInteractSFX();
-  current = (current + 1) % count;
+  figureIndex = (figureIndex + 1) % count;
   updateCarousel(Direction.RIGHT);
 }
 
-function showCover() {
-  if (comicBook.classList.contains("show")) {
-    playSFX(interactSFX);
-  } else {
-    playSFX(coverpageSFX);
-  }
+function loadPages() {
+  const currentFigure = figureData[figureIndex];
+  const pages = currentFigure.pages;
 
-  carousel.classList.toggle("show");
-  figureFooter.classList.toggle("show");
+  const comicPages = document.getElementById("comic-pages");
+  comicPages.innerHTML = ""; // Clear existing pages
 
-  comicBook.classList.toggle("show");
+  pages.forEach((page, index) => {
+    const img = document.createElement("img");
+    img.src = page;
+    img.style.zIndex = 12 - index; // Descending z-index
+    comicPages.appendChild(img);
+  });
 }
 
-// function flipPage() {
-//   const comicCover = document.getElementById("comic-cover");
-//   const page1 = document.getElementById("comic-1");
-// }
+function flipPageForward() {
+  playSFX(pageFlipSFX);
+
+  currentPage++;
+  const comicPages = document.getElementById("comic-pages");
+  const pages = comicPages.querySelectorAll("img");
+  if (currentPage < pages.length) {
+    pages[currentPage].style.display = "block"; // Show the next page
+    if (currentPage > 0) {
+      pages[currentPage - 1].style.display = "none"; // Hide the previous page
+    }
+  }
+}
+
+function flipPageBackward() {
+  if (currentPage > 0) {
+    playSFX(pageFlipSFX);
+
+    const comicPages = document.getElementById("comic-pages");
+    const pages = comicPages.querySelectorAll("img");
+    pages[currentPage].style.display = "none"; // Hide the current page
+    currentPage--;
+    pages[currentPage].style.display = "block"; // Show the previous page
+  }
+}
 
 function showCountdownTimer() {
   let countdownElement = document.getElementById("countdown");
@@ -280,15 +301,14 @@ function showCountdownTimer() {
 
 let webcamStream = null;
 
-function showPhotoBooth() {
-  stopBackgroundSFX();
-  const figureSelectScreen = document.getElementById("figure-select-screen");
-  const photoBooth = document.getElementById("photo-booth-screen");
-  // const comicCover = document.getElementById("comic-cover");
+function showPhotoPreviewScreen() {
+  const photoPreviewBackground = document.getElementById(
+    "photo-preview-background"
+  );
+  photoPreviewBackground.src = figureData[figureIndex].selfie;
 
-  figureSelectScreen.classList.toggle("inactive");
-  // comicCover.classList.toggle("show");
-  photoBooth.classList.toggle("show");
+  const selfieCutout = document.getElementById("selfie-cutout");
+  selfieCutout.src = figureData[figureIndex].cutout;
 
   let video = document.querySelector("#video-element");
 
@@ -297,6 +317,7 @@ function showPhotoBooth() {
       .getUserMedia({ video: true, audio: false })
       .then(function (stream) {
         video.srcObject = stream;
+        webcamStream = stream; // Store the stream
       })
       .catch(function (err) {
         console.log("Something went wrong!");
@@ -324,6 +345,8 @@ function capturePhoto() {
   canvasElement.getContext("2d").drawImage(videoElement, 0, 0);
   const photoDataUrl = canvasElement.toDataURL("image/jpeg");
 
+  stopWebcam();
+
   return fetch("/save-photo", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -336,6 +359,8 @@ function capturePhoto() {
       return data.filename;
     });
 }
+
+// QR Code Generation //
 
 function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
   if (scale <= 0 || border < 0) throw new RangeError("Value out of range");
@@ -364,14 +389,13 @@ function generateQRCode(filename) {
   drawCanvas(qr, 13, 1, "#FFFFFF", "#000000", canvas);
 }
 
-async function showPhotoReview(latestPhotoFilename) {
-  stopWebcam();
-  const photoBooth = document.getElementById("photo-booth-screen");
-  const photoReview = document.getElementById("photo-review-screen");
+async function showPhotoReviewScreen(latestPhotoFilename) {
+  // const photoPreviewScreen = document.getElementById("photo-preview-screen");
+  // const photoReview = document.getElementById("photo-review-screen");
   const editedPhoto = document.getElementById("edited-photo");
 
-  photoBooth.classList.toggle("inactive");
-  photoReview.classList.toggle("show");
+  // photoPreviewScreen.classList.toggle("inactive");
+  // photoReview.classList.toggle("show");
 
   try {
     const photoPath = await latestPhotoFilename;
@@ -385,17 +409,175 @@ async function showPhotoReview(latestPhotoFilename) {
 
 let latestPhotoFilename = "";
 
+// State Control //
+
+const AppState = {
+  FIGURE_SELECT: "FIGURE_SELECT",
+  COMIC_BOOK: "COMIC_BOOK",
+  PHOTO_PREVIEW: "PHOTO_PREVIEW",
+  PHOTO_COUNTDOWN: "PHOTO_COUNTDOWN",
+  PHOTO_REVIEW: "PHOTO_REVIEW",
+};
+
+let currentState = AppState.FIGURE_SELECT;
+
+// State transition handlers
+const stateHandlers = {
+  [AppState.FIGURE_SELECT]: {
+    left: () => prev(),
+    right: () => next(),
+    enter: () => {
+      if (figureIndex != 0) {
+        const message = document.createElement("div");
+        message.textContent =
+          "Only Yvonne Chouteau's comic is available in this hardware validation build";
+        message.style.position = "fixed";
+        message.style.top = "50%";
+        message.style.left = "50%";
+        message.style.transform = "translate(-50%, -50%)";
+        message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        message.style.color = "white";
+        message.style.padding = "100px";
+        message.style.borderRadius = "50px";
+        message.style.fontSize = "5em";
+        message.style.zIndex = "1000";
+        document.body.appendChild(message);
+
+        setTimeout(() => {
+          document.body.removeChild(message);
+        }, 2000);
+      } else {
+        playSFX(coverpageSFX);
+        loadPages();
+        transitionToScreen(figureSelectScreen, comicBook);
+        currentState = AppState.COMIC_BOOK;
+      }
+    },
+  },
+
+  [AppState.COMIC_BOOK]: {
+    left: () => {
+      if (currentPage <= 0) {
+        transitionToScreen(comicBook, figureSelectScreen);
+        currentState = AppState.FIGURE_SELECT;
+      } else {
+        flipPageBackward();
+      }
+    },
+    right: () => {
+      if (currentPage >= figureData[figureIndex].pages.length - 1) {
+        currentState = AppState.PHOTO_PREVIEW;
+        showPhotoPreviewScreen();
+        transitionToScreen(comicBook, photoPreviewScreen);
+      } else {
+        flipPageForward();
+      }
+    },
+    enter: () => {
+      transitionToScreen(comicBook, figureSelectScreen);
+      currentState = AppState.FIGURE_SELECT;
+    },
+  },
+
+  [AppState.PHOTO_PREVIEW]: {
+    left: () => {
+      // Go back to last page of comic book screen
+      transitionToScreen(photoPreviewScreen, comicBook);
+      currentState = AppState.COMIC_BOOK;
+    },
+    right: () => {
+      // Maybe do nothing or same as enter
+    },
+    enter: async () => {
+      currentState = AppState.PHOTO_COUNTDOWN;
+      await showCountdownTimer();
+      latestPhotoFilename = await capturePhoto();
+      photoPreviewScreen.classList.remove("active");
+      const photoReviewScreen = document.getElementById("photo-review-screen");
+      photoReviewScreen.classList.add("active");
+      showPhotoReviewScreen(latestPhotoFilename);
+      currentState = AppState.PHOTO_REVIEW;
+    },
+  },
+
+  [AppState.PHOTO_COUNTDOWN]: {
+    // During countdown, keys are disabled
+    left: () => {},
+    right: () => {},
+    enter: () => {},
+  },
+
+  [AppState.PHOTO_REVIEW]: {
+    left: () => {
+      // Go back to photo booth
+      const photoPreviewScreen = document.getElementById(
+        "photo-preview-screen"
+      );
+      const photoReview = document.getElementById("photo-review-screen");
+      photoPreviewScreen.classList.remove("inactive");
+      photoReview.classList.remove("show");
+      currentState = AppState.PHOTO_BOOTH;
+    },
+    right: () => {
+      // Go to figure select
+      const figureSelectScreen = document.getElementById(
+        "figure-select-screen"
+      );
+      const photoReview = document.getElementById("photo-review-screen");
+      figureSelectScreen.classList.remove("inactive");
+      photoReview.classList.remove("show");
+      currentState = AppState.FIGURE_SELECT;
+    },
+    enter: () => {
+      // Same as right - go to figure select
+      const figureSelectScreen = document.getElementById(
+        "figure-select-screen"
+      );
+      const photoReview = document.getElementById("photo-review-screen");
+      figureSelectScreen.classList.remove("inactive");
+      photoReview.classList.remove("show");
+      currentState = AppState.FIGURE_SELECT;
+    },
+  },
+};
+
+// State Management //
 window.addEventListener("keydown", async (e) => {
-  if (e.key === "a") prev();
-  if (e.key === "d") next();
-  if (e.key === "s") showCover();
-  if (e.key === "f") flipPage();
-  if (e.key === "j") showPhotoBooth();
-  if (e.key === "k") {
-    await showCountdownTimer();
-    latestPhotoFilename = await capturePhoto();
-    showPhotoReview(latestPhotoFilename);
+  const handler = stateHandlers[currentState];
+
+  if (!handler) {
+    console.error(`No handler for state: ${currentState}`);
+    return;
+  }
+
+  switch (e.key) {
+    case "ArrowLeft":
+      console.log("Left key pressed");
+      console.log("Current state:", currentState);
+      handler.left();
+      console.log("Updated state:", currentState);
+      break;
+    case "ArrowRight":
+      console.log("Right key pressed");
+      console.log("Current state:", currentState);
+      handler.right();
+      console.log("Updated state:", currentState);
+      break;
+    case "Enter":
+      console.log("Enter key pressed");
+      console.log("Current state:", currentState);
+      handler.enter();
+      console.log("Updated state:", currentState);
+      break;
+    default:
+      break;
   }
 });
 
+function transitionToScreen(currentScreen, newScreen) {
+  currentScreen.classList.remove("active");
+  newScreen.classList.add("active");
+}
+
+// Initialize
 updateCarousel();

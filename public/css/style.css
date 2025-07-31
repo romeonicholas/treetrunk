@@ -218,11 +218,11 @@ div {
 } */
 
 #video-element {
-    position: absolute;
-    top: 806px;
-    left: 382px;
-    width: 2080px;
-    height: 1920px;
+  position: absolute;
+  top: 806px;
+  left: 382px;
+  width: 2080px;
+  height: 1920px;
 }
 
 .photo-review-screen {
@@ -258,8 +258,8 @@ div {
 
 #selfie-cutout {
   position: absolute;
-  left: 700px;
-  top: 720px;
+  left: 885px;
+  top: 805px;
   z-index: 1;
 }
 
@@ -300,11 +300,11 @@ div {
 }
 
 #qr-code {
-    position: absolute;
-    top: 1719px;
-    left: 255px;
-    width: 500px;
-    height: 500px;
-    z-index: 100;
-    background: white;
+  position: absolute;
+  top: 1719px;
+  left: 255px;
+  width: 500px;
+  height: 500px;
+  z-index: 100;
+  background: white;
 }

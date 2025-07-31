@@ -310,7 +310,7 @@ function showPhotoPreviewScreen() {
   spinner.style.display = "none";
 
   const selfieCutout = document.getElementById("selfie-cutout");
-  selfieCutout.src = figureData[figureIndex].cutout;
+  selfieCutout.src = figureData[figureIndex].selfieCutout;
 
   let video = document.querySelector("#video-element");
 

@@ -313,8 +313,16 @@ function showPhotoPreviewScreen() {
   let video = document.querySelector("#video-element");
 
   if (navigator.mediaDevices.getUserMedia) {
+    video.onloadedmetadata = () => {
+      console.log(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`);
+    };
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({
+        video: {
+          width: { ideal: 1080 },
+          height: { ideal: 1920 },
+        },
+      })
       .then(function (stream) {
         video.srcObject = stream;
         webcamStream = stream; // Store the stream

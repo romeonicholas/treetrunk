@@ -218,11 +218,11 @@ div {
 } */
 
 #video-element {
-  position: absolute;
-  top: 717px;
-  left: 473px;
-  width: 1910px;
-  height: 1600px;
+    position: absolute;
+    top: 806px;
+    left: 382px;
+    width: 2080px;
+    height: 1920px;
 }
 
 .photo-review-screen {

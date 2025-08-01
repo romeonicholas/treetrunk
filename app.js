@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
 import { exec } from "child_process";
-import dgram from "dgram"; // Use import instead of require
+import dgram from "dgram";
 import { WebSocketServer } from "ws";
 import { createServer } from "http";
 
@@ -15,10 +15,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Create HTTP server for both Express and WebSocket
 const httpServer = createServer(app);
 
-// WebSocket setup
 const wss = new WebSocketServer({ server: httpServer });
 let connectedClients = [];
 
@@ -32,12 +30,10 @@ wss.on("connection", (ws) => {
   });
 });
 
-// Function to send button press to all connected clients
 function sendButtonPressToClients(action) {
   const message = JSON.stringify({ type: "button-press", action });
   connectedClients.forEach((client) => {
     if (client.readyState === 1) {
-      // WebSocket.OPEN
       client.send(message);
     }
   });
@@ -68,7 +64,7 @@ app.post("/save-photo", (req, res) => {
 
   const figure = figureData[figureIndex];
   if (!figure) return res.status(400).send("Invalid figure index");
-  const cutoutPath = path.join(__dirname, "public", figure.cutout);
+  const cutoutPath = path.join(__dirname, "public", figure.selfieCutout);
   const script = path.resolve("./edit-photo.ps1");
   const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
 
@@ -89,7 +85,6 @@ app.get("/", (request, response) => {
   response.render("index", { figureData: figureData });
 });
 
-// UDP Server for Phidget messages
 const udpServer = dgram.createSocket("udp4");
 
 udpServer.on("listening", () => {
@@ -112,7 +107,7 @@ udpServer.on("message", (message, remote) => {
 udpServer.bind(5005, "0.0.0.0");
 
 function handlePhidgetButton(button, state) {
-  if (state !== 1) return; // only trigger on press, not release
+  if (state !== 1) return; 
 
   let action;
   switch (button) {
@@ -134,7 +129,6 @@ function handlePhidgetButton(button, state) {
   sendButtonPressToClients(action);
 }
 
-// Use httpServer instead of app.listen to support both Express and WebSocket
 httpServer.listen(PORT, () => {
   console.log(`👋 Started server on port ${PORT}`);
 });

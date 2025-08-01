@@ -236,12 +236,12 @@ function loadPages() {
   const pages = currentFigure.pages;
 
   const comicPages = document.getElementById("comic-pages");
-  comicPages.innerHTML = ""; // Clear existing pages
+  comicPages.innerHTML = ""; 
 
   pages.forEach((page, index) => {
     const img = document.createElement("img");
     img.src = page;
-    img.style.zIndex = 12 - index; // Descending z-index
+    img.style.zIndex = 12 - index; 
     comicPages.appendChild(img);
   });
 }
@@ -253,9 +253,9 @@ function flipPageForward() {
   const comicPages = document.getElementById("comic-pages");
   const pages = comicPages.querySelectorAll("img");
   if (currentPage < pages.length) {
-    pages[currentPage].style.display = "block"; // Show the next page
+    pages[currentPage].style.display = "block";
     if (currentPage > 0) {
-      pages[currentPage - 1].style.display = "none"; // Hide the previous page
+      pages[currentPage - 1].style.display = "none"; 
     }
   }
 }
@@ -266,9 +266,9 @@ function flipPageBackward() {
 
     const comicPages = document.getElementById("comic-pages");
     const pages = comicPages.querySelectorAll("img");
-    pages[currentPage].style.display = "none"; // Hide the current page
+    pages[currentPage].style.display = "none"; 
     currentPage--;
-    pages[currentPage].style.display = "block"; // Show the previous page
+    pages[currentPage].style.display = "block";
   }
 }
 
@@ -412,7 +412,7 @@ async function showPhotoReviewScreen(latestPhotoFilename) {
     const photoPath = await latestPhotoFilename;
     const imageUrl = `/editedUserPhotos/${photoPath}`;
     editedPhoto.src = imageUrl;
-    generateQRCode(`localhost:3000${imageUrl}`);
+    generateQRCode(`http://192.168.68.100:3000${imageUrl}`);
   } catch (error) {
     console.error("Error resolving photo promise:", error);
   }
@@ -511,7 +511,6 @@ const stateHandlers = {
   },
 
   [AppState.PHOTO_COUNTDOWN]: {
-    // During countdown, keys are disabled
     left: () => {},
     right: () => {},
     enter: () => {},
@@ -519,10 +518,11 @@ const stateHandlers = {
 
   [AppState.PHOTO_REVIEW]: {
     left: () => {
-      currentState = AppState.PHOTO_PREVIEW;
       showPhotoPreviewScreen();
-      transitionToScreen(photoReview, photoPreviewScreen);
-      currentState = AppState.PHOTO_BOOTH;
+      const photoReviewScreen = document.getElementById("photo-review-screen");
+      transitionToScreen(photoReviewScreen, photoPreviewScreen);
+      currentState = AppState.PHOTO_PREVIEW;
+
     },
     right: () => {
       const figureSelectScreen = document.getElementById(
@@ -572,7 +572,6 @@ function initializeWebSocket() {
 
   ws.onclose = function () {
     console.log("WebSocket connection closed");
-    // Reconnect after a delay
     setTimeout(initializeWebSocket, 1000);
   };
 
@@ -581,7 +580,6 @@ function initializeWebSocket() {
   };
 }
 
-// Your input handler function
 async function handleInput(action) {
   const handler = stateHandlers[currentState];
 
@@ -589,8 +587,6 @@ async function handleInput(action) {
     console.error(`No handler for state: ${currentState}`);
     return;
   }
-
-  console.log(`Handling action '${action}' in state '${currentState}'`);
 
   switch (action) {
     case "left":

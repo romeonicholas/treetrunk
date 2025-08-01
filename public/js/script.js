@@ -234,6 +234,7 @@ function next() {
 function loadPages() {
   const currentFigure = figureData[figureIndex];
   const pages = currentFigure.pages;
+  currentPage = 0;
 
   const comicPages = document.getElementById("comic-pages");
   comicPages.innerHTML = ""; 

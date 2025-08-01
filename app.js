@@ -23,6 +23,28 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 const httpServer = createServer(app);
+const udpClient = dgram.createSocket("udp4");
+
+function sendTTTMessage(value) {
+  if (value < 1 || value > 9) {
+    console.warn(`Invalid TTT value: ${value}. Must be between 1 and 9.`);
+    return;
+  }
+
+  const message = `TTT:${value}`;
+  const targetIP = "10.62.0.11";
+  const targetPort = 5000;
+
+  udpClient.send(message, targetPort, targetIP, (err) => {
+    if (err) {
+      console.error("Error sending UDP message:", err);
+    } else {
+      console.log(
+        `Sent UDP message: "${message}" to ${targetIP}:${targetPort}`
+      );
+    }
+  });
+}
 
 const wss = new WebSocketServer({ server: httpServer });
 let connectedClients = [];
@@ -102,6 +124,12 @@ app.get("/download/:filename", (req, response) => {
   response.render("download", { imagePath });
 });
 
+app.post("/send-ttt", (req, res) => {
+  const { value } = req.body;
+  sendTTTMessage(value);
+  res.json({ success: true, message: `TTT:${value} sent` });
+});
+
 const udpServer = dgram.createSocket("udp4");
 
 udpServer.on("listening", () => {
@@ -145,6 +173,16 @@ function handlePhidgetButton(button, state) {
   console.log(`Sending action '${action}' to clients`);
   sendButtonPressToClients(action);
 }
+
+process.on("exit", () => {
+  udpClient.close();
+});
+
+process.on("SIGINT", () => {
+  console.log("\nClosing UDP client...");
+  udpClient.close();
+  process.exit();
+});
 
 httpServer.listen(PORT, () => {
   console.log(`👋 Started server on port ${PORT}`);

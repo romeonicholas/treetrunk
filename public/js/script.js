@@ -474,6 +474,13 @@ const stateHandlers = {
         playSFX(coverpageSFX);
         loadPages();
         transitionToScreen(figureSelectScreen, comicBook);
+        fetch("/send-ttt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ value: 2 }),
+        });
         currentState = AppState.COMIC_BOOK;
       }
     },
@@ -482,6 +489,13 @@ const stateHandlers = {
   [AppState.COMIC_BOOK]: {
     left: () => {
       if (currentPage <= 0) {
+        fetch("/send-ttt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ value: 1 }),
+        });
         transitionToScreen(comicBook, figureSelectScreen);
         currentState = AppState.FIGURE_SELECT;
       } else {
@@ -493,6 +507,13 @@ const stateHandlers = {
         currentState = AppState.PHOTO_PREVIEW;
         showPhotoPreviewScreen();
         transitionToScreen(comicBook, photoPreviewScreen);
+        fetch("/send-ttt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ value: 3 }),
+        });
       } else {
         flipPageForward();
       }
@@ -500,6 +521,13 @@ const stateHandlers = {
     enter: () => {
       transitionToScreen(comicBook, figureSelectScreen);
       currentState = AppState.FIGURE_SELECT;
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 1 }),
+      });
     },
   },
 
@@ -507,6 +535,13 @@ const stateHandlers = {
     left: () => {
       transitionToScreen(photoPreviewScreen, comicBook);
       currentState = AppState.COMIC_BOOK;
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 2 }),
+      });
     },
     right: () => {},
     enter: async () => {
@@ -519,6 +554,13 @@ const stateHandlers = {
       const photoReviewScreen = document.getElementById("photo-review-screen");
       photoReviewScreen.classList.add("active");
       showPhotoReviewScreen(latestPhotoFilename);
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 3 }),
+      });
       currentState = AppState.PHOTO_REVIEW;
     },
   },
@@ -534,6 +576,13 @@ const stateHandlers = {
       showPhotoPreviewScreen();
       const photoReviewScreen = document.getElementById("photo-review-screen");
       transitionToScreen(photoReviewScreen, photoPreviewScreen);
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 3 }),
+      });
       currentState = AppState.PHOTO_PREVIEW;
     },
     right: () => {
@@ -543,6 +592,13 @@ const stateHandlers = {
       const photoReview = document.getElementById("photo-review-screen");
       photoReview.classList.remove("active");
       figureSelectScreen.classList.add("active");
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 1 }),
+      });
       currentState = AppState.FIGURE_SELECT;
     },
     enter: () => {
@@ -552,6 +608,13 @@ const stateHandlers = {
       const photoReview = document.getElementById("photo-review-screen");
       photoReview.classList.remove("active");
       figureSelectScreen.classList.add("active");
+      fetch("/send-ttt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value: 1 }),
+      });
       currentState = AppState.FIGURE_SELECT;
     },
   },
@@ -641,3 +704,10 @@ function transitionToScreen(currentScreen, newScreen) {
 
 // Initialize
 updateCarousel();
+fetch("/send-ttt", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ value: 1 }),
+});

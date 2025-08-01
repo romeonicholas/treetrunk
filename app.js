@@ -85,6 +85,12 @@ app.get("/", (request, response) => {
   response.render("index", { figureData: figureData });
 });
 
+app.get("/download/:photoTimestamp", (req, response) => {
+  const { photoTimestamp } = req.params;
+  const imagePath = `/editedUserPhotos/${photoTimestamp}.png`;
+  response.render("download", { imagePath });
+});
+
 const udpServer = dgram.createSocket("udp4");
 
 udpServer.on("listening", () => {
@@ -107,7 +113,7 @@ udpServer.on("message", (message, remote) => {
 udpServer.bind(5005, "0.0.0.0");
 
 function handlePhidgetButton(button, state) {
-  if (state !== 1) return; 
+  if (state !== 1) return;
 
   let action;
   switch (button) {

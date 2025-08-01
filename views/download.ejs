@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f5f5f5;
+        overflow: hidden; /* Prevent scrolling */
+      }
+
+      .download-container {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+        max-width: 393px;
+        margin: 0 auto;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: left;
+        overflow: hidden; /* Prevent container overflow */
+      }
+
+      .logo {
+        width: 33%;
+        max-width: 120px;
+        height: auto;
+        margin-bottom: 10px;
+        flex-shrink: 0; /* Prevent logo from shrinking */
+      }
+
+      .instruction {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 10px;
+        line-height: 1.3;
+        flex-shrink: 0; /* Prevent text from shrinking */
+      }
+
+      .selfie-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+        min-height: 0; /* Allow flex item to shrink below content size */
+        overflow: hidden; /* Prevent image overflow */
+      }
+
+      .selfie {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .hashtag {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin: 10px 0 8px 0;
+        flex-shrink: 0; /* Prevent hashtag from shrinking */
+      }
+
+      .expiration {
+        font-size: 12px;
+        color: #666;
+        flex-shrink: 0; /* Prevent expiration text from shrinking */
+      }
+
+      /* Mobile-specific adjustments */
+      @media (max-height: 700px) {
+        .download-container {
+          padding: 15px 16px;
+        }
+
+        .logo {
+          margin-bottom: 8px;
+        }
+
+        .instruction {
+          font-size: 15px;
+          margin-bottom: 8px;
+        }
+
+        .hashtag {
+          font-size: 16px;
+          margin: 8px 0 6px 0;
+        }
+
+        .expiration {
+          font-size: 11px;
+        }
+      }
+
+      @media (max-height: 600px) {
+        .download-container {
+          padding: 12px 16px;
+        }
+
+        .logo {
+          width: 25%;
+          margin-bottom: 6px;
+        }
+
+        .instruction {
+          font-size: 14px;
+          margin-bottom: 6px;
+        }
+
+        .hashtag {
+          font-size: 15px;
+          margin: 6px 0 4px 0;
+        }
+
+        .expiration {
+          font-size: 10px;
+        }
+      }
+
+      @media (max-height: 500px) {
+        .download-container {
+          padding: 8px 16px;
+        }
+
+        .logo {
+          width: 20%;
+          margin-bottom: 4px;
+        }
+
+        .instruction {
+          font-size: 13px;
+          margin-bottom: 4px;
+        }
+
+        .hashtag {
+          font-size: 14px;
+          margin: 4px 0 2px 0;
+        }
+
+        .expiration {
+          font-size: 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="download-container">
+      <img
+        src="/images/ui/FDCLogo.svg"
+        alt="Family Discovery Center Logo"
+        class="logo"
+      />
+      <p class="instruction">To save your selfie, tap and hold on the image.</p>
+
+      <div class="selfie-box">
+        <img src="<%= imagePath %>" alt="Your Selfie" class="selfie" />
+      </div>
+
+      <p class="hashtag">#FirstAmericansMuseum</p>
+
+      <p class="expiration">This page automatically expires on 9/29/2025</p>
+    </div>
+  </body>
+</html>

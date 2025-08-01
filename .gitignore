@@ -3,3 +3,4 @@ node_modules
 /public/originalUserPhotos
 /public/editedUserPhotos
 /cameratest.html
+.env

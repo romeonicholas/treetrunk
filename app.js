@@ -14,8 +14,8 @@ import figureData from "./public/js/figureData.js";
 dotenv.config();
 
 // Use environment variables with fallbacks
-const HOST = process.env.APP_HOST || "localhost";
-const PORT = process.env.APP_PORT || 3000;
+const HOST = process.env.HOST || "localhost";
+const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

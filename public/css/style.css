@@ -253,7 +253,12 @@ div {
 }
 
 #canvas-element {
-  opacity: 0;
+  display: none;
+  position: absolute;
+  top: 806px;
+  left: 382px;
+  width: 2080px;
+  height: 1920px;
 }
 
 #selfie-cutout {

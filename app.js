@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 
 const httpServer = createServer(app);
 
@@ -85,9 +85,9 @@ app.get("/", (request, response) => {
   response.render("index", { figureData: figureData });
 });
 
-app.get("/download/:photoTimestamp", (req, response) => {
-  const { photoTimestamp } = req.params;
-  const imagePath = `/editedUserPhotos/${photoTimestamp}.png`;
+app.get("/download/:filename", (req, response) => {
+  const { filename } = req.params;
+  const imagePath = `/editedUserPhotos/${filename}`;
   response.render("download", { imagePath });
 });
 

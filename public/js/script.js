@@ -312,7 +312,10 @@ function showPhotoPreviewScreen() {
   const selfieCutout = document.getElementById("selfie-cutout");
   selfieCutout.src = figureData[figureIndex].selfieCutout;
 
+  let photoCanvas = document.getElementById("canvas-element");
+  photoCanvas.style.display = "none";
   let video = document.querySelector("#video-element");
+  video.style.display = "block";
 
   if (navigator.mediaDevices.getUserMedia) {
     video.onloadedmetadata = () => {
@@ -336,11 +339,20 @@ function showPhotoPreviewScreen() {
 }
 
 function stopWebcam() {
+  const video = document.getElementById("video-element");
+  const canvas = document.getElementById("canvas-element");
+  if (video && canvas && video.videoWidth && video.videoHeight) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    canvas.style.display = "block";
+    video.style.display = "none";
+  }
+
   if (webcamStream) {
     webcamStream.getTracks().forEach((track) => track.stop());
     webcamStream = null;
   }
-  const video = document.getElementById("video-element");
   if (video) {
     video.srcObject = null;
   }
@@ -407,12 +419,10 @@ async function showPhotoReviewScreen(latestPhotoFilename) {
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
 
   const editedPhoto = document.getElementById("edited-photo");
-
+  editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
   try {
     const photoPath = await latestPhotoFilename;
-    const imageUrl = `/editedUserPhotos/${photoPath}`;
-    editedPhoto.src = imageUrl;
-    generateQRCode(`http://192.168.68.100:3000${imageUrl}`);
+    generateQRCode(`http://192.168.68.100:3000/download/${photoPath}`);
   } catch (error) {
     console.error("Error resolving photo promise:", error);
   }

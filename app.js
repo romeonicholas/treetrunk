@@ -7,13 +7,20 @@ import dgram from "dgram";
 import { WebSocketServer } from "ws";
 import { createServer } from "http";
 
+import dotenv from "dotenv";
+import "dotenv/config";
 import figureData from "./public/js/figureData.js";
+
+dotenv.config();
+
+// Use environment variables with fallbacks
+const HOST = process.env.APP_HOST || "localhost";
+const PORT = process.env.APP_PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 4000;
 
 const httpServer = createServer(app);
 
@@ -82,7 +89,11 @@ app.post("/save-photo", (req, res) => {
 });
 
 app.get("/", (request, response) => {
-  response.render("index", { figureData: figureData });
+  response.render("index", {
+    figureData: figureData,
+    appHost: HOST,
+    appPort: PORT,
+  });
 });
 
 app.get("/download/:filename", (req, response) => {

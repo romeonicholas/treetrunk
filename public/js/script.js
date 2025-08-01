@@ -236,12 +236,12 @@ function loadPages() {
   const pages = currentFigure.pages;
 
   const comicPages = document.getElementById("comic-pages");
-  comicPages.innerHTML = ""; 
+  comicPages.innerHTML = "";
 
   pages.forEach((page, index) => {
     const img = document.createElement("img");
     img.src = page;
-    img.style.zIndex = 12 - index; 
+    img.style.zIndex = 12 - index;
     comicPages.appendChild(img);
   });
 }
@@ -255,7 +255,7 @@ function flipPageForward() {
   if (currentPage < pages.length) {
     pages[currentPage].style.display = "block";
     if (currentPage > 0) {
-      pages[currentPage - 1].style.display = "none"; 
+      pages[currentPage - 1].style.display = "none";
     }
   }
 }
@@ -266,7 +266,7 @@ function flipPageBackward() {
 
     const comicPages = document.getElementById("comic-pages");
     const pages = comicPages.querySelectorAll("img");
-    pages[currentPage].style.display = "none"; 
+    pages[currentPage].style.display = "none";
     currentPage--;
     pages[currentPage].style.display = "block";
   }
@@ -422,7 +422,9 @@ async function showPhotoReviewScreen(latestPhotoFilename) {
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
   try {
     const photoPath = await latestPhotoFilename;
-    generateQRCode(`http://10.62.0.227:4000/download/${photoPath}`);
+    generateQRCode(
+      `http://${window.appHost}:${window.appPort}/download/${photoPath}`
+    );
   } catch (error) {
     console.error("Error resolving photo promise:", error);
   }
@@ -532,7 +534,6 @@ const stateHandlers = {
       const photoReviewScreen = document.getElementById("photo-review-screen");
       transitionToScreen(photoReviewScreen, photoPreviewScreen);
       currentState = AppState.PHOTO_PREVIEW;
-
     },
     right: () => {
       const figureSelectScreen = document.getElementById(

@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="icon" href="data:," />
     <script src="/js/qrcodegen.js" defer></script>
-    <script src="/js/script.js" type="module" defer>
-      css
+    <script>
+      window.appHost = "<%= appHost %>";
+      window.appPort = "<%= appPort %>";
     </script>
+    <script type="module" src="/js/script.js"></script>
   </head>
 
   <body class="has-background">

@@ -10,7 +10,7 @@ const texts = Array.from(document.querySelectorAll(".carousel-text"));
 
 // Comic Book Elements //
 
-const comicBook = document.getElementById("comic-book");
+const comicBookScreen = document.getElementById("comic-book-screen");
 const comicPages = document.getElementById("comic-pages");
 
 // Photo Preview Elements //
@@ -19,11 +19,10 @@ const photoPreviewScreen = document.getElementById("photo-preview-screen");
 const photoPreviewBackground = document.getElementById(
   "photo-preview-background"
 );
-let countdownElement = document.getElementById("countdown");
+const countdown = document.getElementById("countdown");
 const spinner = document.getElementById("spinner");
 const selfieCutout = document.getElementById("selfie-cutout");
 const video = document.getElementById("video-element");
-const videoElement = document.getElementById("video-element");
 const photoCanvas = document.getElementById("canvas-element");
 
 // Photo Review Elements //
@@ -35,7 +34,7 @@ const photoReviewBackground = document.getElementById(
 const qrCodeCanvas = document.getElementById("qr-code");
 const editedPhoto = document.getElementById("edited-photo");
 
-// Funcitons //
+// Functions //
 
 function sendTTT(value) {
   fetch("/send-ttt", {
@@ -316,7 +315,7 @@ function flipPageBackward() {
 function showCountdownTimer() {
   return new Promise((resolve) => {
     let timeleft = 2;
-    countdownElement.innerHTML = 3;
+    countdown.innerHTML = 3;
 
     countdownSFX.currentTime = 0;
     countdownSFX.play();
@@ -324,12 +323,12 @@ function showCountdownTimer() {
     let photoTimer = setInterval(function () {
       if (timeleft <= 0) {
         clearInterval(photoTimer);
-        countdownElement.innerHTML = "";
+        countdown.innerHTML = "";
         photoSFX.currentTime = 0;
         photoSFX.play();
         resolve();
       } else {
-        countdownElement.innerHTML = timeleft;
+        countdown.innerHTML = timeleft;
         countdownSFX.currentTime = 0;
         countdownSFX.play();
       }
@@ -390,9 +389,9 @@ function stopWebcam() {
 }
 
 function capturePhoto() {
-  photoCanvas.width = videoElement.videoWidth;
-  photoCanvas.height = videoElement.videoHeight;
-  photoCanvas.getContext("2d").drawImage(videoElement, 0, 0);
+  photoCanvas.width = video.videoWidth;
+  photoCanvas.height = video.videoHeight;
+  photoCanvas.getContext("2d").drawImage(video, 0, 0);
   const photoDataUrl = photoCanvas.toDataURL("image/jpeg");
 
   stopWebcam();
@@ -494,7 +493,7 @@ const stateHandlers = {
       } else {
         playSFX(coverpageSFX);
         loadPages();
-        transitionToScreen(figureSelectScreen, comicBook);
+        transitionToScreen(figureSelectScreen, comicBookScreen);
         sendTTT(2);
         currentState = AppState.COMIC_BOOK;
       }
@@ -505,7 +504,7 @@ const stateHandlers = {
     left: () => {
       if (currentPage <= 0) {
         sendTTT(1);
-        transitionToScreen(comicBook, figureSelectScreen);
+        transitionToScreen(comicBookScreen, figureSelectScreen);
         currentState = AppState.FIGURE_SELECT;
       } else {
         flipPageBackward();
@@ -515,14 +514,14 @@ const stateHandlers = {
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
         currentState = AppState.PHOTO_PREVIEW;
         showPhotoPreviewScreen();
-        transitionToScreen(comicBook, photoPreviewScreen);
+        transitionToScreen(comicBookScreen, photoPreviewScreen);
         sendTTT(3);
       } else {
         flipPageForward();
       }
     },
     enter: () => {
-      transitionToScreen(comicBook, figureSelectScreen);
+      transitionToScreen(comicBookScreen, figureSelectScreen);
       currentState = AppState.FIGURE_SELECT;
       sendTTT(1);
     },
@@ -530,7 +529,7 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      transitionToScreen(photoPreviewScreen, comicBook);
+      transitionToScreen(photoPreviewScreen, comicBookScreen);
       currentState = AppState.COMIC_BOOK;
       sendTTT(2);
     },

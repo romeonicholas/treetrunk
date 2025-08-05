@@ -1,18 +1,61 @@
 import figureData from "./figureData.js";
 
-// Elements
-const texts = Array.from(document.querySelectorAll(".carousel-text"));
+// Figure Select Elements //
+
+const figureSelectScreen = document.getElementById("figure-select-screen");
 const figures = Array.from(
   document.querySelectorAll(".figure-transform-wrapper")
 );
-const figureSelectScreen = document.getElementById("figure-select-screen");
+const texts = Array.from(document.querySelectorAll(".carousel-text"));
+
+// Comic Book Elements //
+
 const comicBook = document.getElementById("comic-book");
+const comicPages = document.getElementById("comic-pages");
+
+// Photo Preview Elements //
+
 const photoPreviewScreen = document.getElementById("photo-preview-screen");
+const photoPreviewBackground = document.getElementById(
+  "photo-preview-background"
+);
+let countdownElement = document.getElementById("countdown");
+const spinner = document.getElementById("spinner");
+const selfieCutout = document.getElementById("selfie-cutout");
+const video = document.getElementById("video-element");
+const videoElement = document.getElementById("video-element");
+const photoCanvas = document.getElementById("canvas-element");
+
+// Photo Review Elements //
+
+const photoReviewScreen = document.getElementById("photo-review-screen");
+const photoReviewBackground = document.getElementById(
+  "photo-review-background"
+);
+const qrCodeCanvas = document.getElementById("qr-code");
+const editedPhoto = document.getElementById("edited-photo");
+
+// Funcitons //
+
+function sendTTT(value) {
+  fetch("/send-ttt", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ value }),
+  }).catch((error) => {
+    console.error("Failed to send TTT message:", error);
+  });
+}
+
+// Initialization //
 
 const count = figures.length;
 let figureIndex = 0;
-
 let currentPage = 0;
+window.addEventListener("load", initializeWebSocket);
+sendTTT(1);
 
 // Audio //
 
@@ -34,7 +77,7 @@ function playInteractSFX() {
   interactSFX.play();
 }
 
-// Carousel Functionality //
+// Carousel Functionality
 
 function getDiff(i, center) {
   let diff = i - center;
@@ -236,7 +279,6 @@ function loadPages() {
   const pages = currentFigure.pages;
   currentPage = 0;
 
-  const comicPages = document.getElementById("comic-pages");
   comicPages.innerHTML = "";
 
   pages.forEach((page, index) => {
@@ -251,7 +293,6 @@ function flipPageForward() {
   playSFX(pageFlipSFX);
 
   currentPage++;
-  const comicPages = document.getElementById("comic-pages");
   const pages = comicPages.querySelectorAll("img");
   if (currentPage < pages.length) {
     pages[currentPage].style.display = "block";
@@ -265,7 +306,6 @@ function flipPageBackward() {
   if (currentPage > 0) {
     playSFX(pageFlipSFX);
 
-    const comicPages = document.getElementById("comic-pages");
     const pages = comicPages.querySelectorAll("img");
     pages[currentPage].style.display = "none";
     currentPage--;
@@ -274,8 +314,6 @@ function flipPageBackward() {
 }
 
 function showCountdownTimer() {
-  let countdownElement = document.getElementById("countdown");
-
   return new Promise((resolve) => {
     let timeleft = 2;
     countdownElement.innerHTML = 3;
@@ -303,17 +341,11 @@ function showCountdownTimer() {
 let webcamStream = null;
 
 function showPhotoPreviewScreen() {
-  const photoPreviewBackground = document.getElementById(
-    "photo-preview-background"
-  );
   photoPreviewBackground.src = figureData[figureIndex].selfie;
-  const spinner = document.getElementById("spinner");
   spinner.style.display = "none";
 
-  const selfieCutout = document.getElementById("selfie-cutout");
   selfieCutout.src = figureData[figureIndex].selfieCutout;
 
-  let photoCanvas = document.getElementById("canvas-element");
   photoCanvas.style.display = "none";
   let video = document.querySelector("#video-element");
   video.style.display = "block";
@@ -340,13 +372,11 @@ function showPhotoPreviewScreen() {
 }
 
 function stopWebcam() {
-  const video = document.getElementById("video-element");
-  const canvas = document.getElementById("canvas-element");
-  if (video && canvas && video.videoWidth && video.videoHeight) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-    canvas.style.display = "block";
+  if (video && photoCanvas && video.videoWidth && video.videoHeight) {
+    photoCanvas.width = video.videoWidth;
+    photoCanvas.height = video.videoHeight;
+    photoCanvas.getContext("2d").drawImage(video, 0, 0);
+    photoCanvas.style.display = "block";
     video.style.display = "none";
   }
 
@@ -360,16 +390,13 @@ function stopWebcam() {
 }
 
 function capturePhoto() {
-  const videoElement = document.getElementById("video-element");
-  const canvasElement = document.getElementById("canvas-element");
-
-  canvasElement.width = videoElement.videoWidth;
-  canvasElement.height = videoElement.videoHeight;
-  canvasElement.getContext("2d").drawImage(videoElement, 0, 0);
-  const photoDataUrl = canvasElement.toDataURL("image/jpeg");
+  photoCanvas.width = videoElement.videoWidth;
+  photoCanvas.height = videoElement.videoHeight;
+  photoCanvas.getContext("2d").drawImage(videoElement, 0, 0);
+  const photoDataUrl = photoCanvas.toDataURL("image/jpeg");
 
   stopWebcam();
-  document.getElementById("spinner").style.display = "block";
+  spinner.style.display = "block";
 
   return fetch("/save-photo", {
     method: "POST",
@@ -386,12 +413,12 @@ function capturePhoto() {
 
 // QR Code Generation //
 
-function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
+function drawCanvas(qr, scale, border, lightColor, darkColor, qrCodeCanvas) {
   if (scale <= 0 || border < 0) throw new RangeError("Value out of range");
   const width = (qr.size + border * 2) * scale;
-  canvas.width = width;
-  canvas.height = width;
-  let ctx = canvas.getContext("2d");
+  qrCodeCanvas.width = width;
+  qrCodeCanvas.height = width;
+  let ctx = qrCodeCanvas.getContext("2d");
   for (let y = -border; y < qr.size + border; y++) {
     for (let x = -border; x < qr.size + border; x++) {
       ctx.fillStyle = qr.getModule(x, y) ? darkColor : lightColor;
@@ -403,23 +430,17 @@ function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
 function generateQRCode(filename) {
   const qr = qrcodegen.QrCode.encodeText(filename, qrcodegen.QrCode.Ecc.LOW);
 
-  const canvas = document.getElementById("qr-code");
-  if (!canvas) {
+  if (!qrCodeCanvas) {
     console.error("No canvas element with id 'qr-canvas' found.");
     return;
   }
 
-  const outputElem = document.getElementById("output");
-  drawCanvas(qr, 13, 1, "#FFFFFF", "#000000", canvas);
+  drawCanvas(qr, 13, 1, "#FFFFFF", "#000000", qrCodeCanvas);
 }
 
 async function showPhotoReviewScreen(latestPhotoFilename) {
-  const photoReviewBackground = document.getElementById(
-    "photo-review-background"
-  );
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
 
-  const editedPhoto = document.getElementById("edited-photo");
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
   try {
     const photoPath = await latestPhotoFilename;
@@ -474,13 +495,7 @@ const stateHandlers = {
         playSFX(coverpageSFX);
         loadPages();
         transitionToScreen(figureSelectScreen, comicBook);
-        fetch("/send-ttt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ value: 2 }),
-        });
+        sendTTT(2);
         currentState = AppState.COMIC_BOOK;
       }
     },
@@ -489,13 +504,7 @@ const stateHandlers = {
   [AppState.COMIC_BOOK]: {
     left: () => {
       if (currentPage <= 0) {
-        fetch("/send-ttt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ value: 1 }),
-        });
+        sendTTT(1);
         transitionToScreen(comicBook, figureSelectScreen);
         currentState = AppState.FIGURE_SELECT;
       } else {
@@ -507,13 +516,7 @@ const stateHandlers = {
         currentState = AppState.PHOTO_PREVIEW;
         showPhotoPreviewScreen();
         transitionToScreen(comicBook, photoPreviewScreen);
-        fetch("/send-ttt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ value: 3 }),
-        });
+        sendTTT(3);
       } else {
         flipPageForward();
       }
@@ -521,13 +524,7 @@ const stateHandlers = {
     enter: () => {
       transitionToScreen(comicBook, figureSelectScreen);
       currentState = AppState.FIGURE_SELECT;
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 1 }),
-      });
+      sendTTT(1);
     },
   },
 
@@ -535,13 +532,7 @@ const stateHandlers = {
     left: () => {
       transitionToScreen(photoPreviewScreen, comicBook);
       currentState = AppState.COMIC_BOOK;
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 2 }),
-      });
+      sendTTT(2);
     },
     right: () => {},
     enter: async () => {
@@ -551,16 +542,9 @@ const stateHandlers = {
       latestPhotoFilename = await capturePhoto();
 
       photoPreviewScreen.classList.remove("active");
-      const photoReviewScreen = document.getElementById("photo-review-screen");
       photoReviewScreen.classList.add("active");
       showPhotoReviewScreen(latestPhotoFilename);
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 3 }),
-      });
+      sendTTT(3);
       currentState = AppState.PHOTO_REVIEW;
     },
   },
@@ -574,53 +558,26 @@ const stateHandlers = {
   [AppState.PHOTO_REVIEW]: {
     left: () => {
       showPhotoPreviewScreen();
-      const photoReviewScreen = document.getElementById("photo-review-screen");
       transitionToScreen(photoReviewScreen, photoPreviewScreen);
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 3 }),
-      });
+      sendTTT(3);
       currentState = AppState.PHOTO_PREVIEW;
     },
     right: () => {
-      const figureSelectScreen = document.getElementById(
-        "figure-select-screen"
-      );
-      const photoReview = document.getElementById("photo-review-screen");
-      photoReview.classList.remove("active");
+      photoReviewScreen.classList.remove("active");
       figureSelectScreen.classList.add("active");
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 1 }),
-      });
+      sendTTT(1);
       currentState = AppState.FIGURE_SELECT;
     },
     enter: () => {
-      const figureSelectScreen = document.getElementById(
-        "figure-select-screen"
-      );
-      const photoReview = document.getElementById("photo-review-screen");
-      photoReview.classList.remove("active");
+      photoReviewScreen.classList.remove("active");
       figureSelectScreen.classList.add("active");
-      fetch("/send-ttt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: 1 }),
-      });
+      sendTTT(1);
       currentState = AppState.FIGURE_SELECT;
     },
   },
 };
 
-// WebSocket connection for Phidget button presses
+// WebSocket connection for Phidget buttons //
 let ws = null;
 
 function initializeWebSocket() {
@@ -679,7 +636,7 @@ async function handleInput(action) {
   }
 }
 
-// Keep keyboard fallback for development
+// Keyboard input handling for development //
 window.addEventListener("keydown", async (e) => {
   switch (e.key) {
     case "ArrowLeft":
@@ -694,20 +651,10 @@ window.addEventListener("keydown", async (e) => {
   }
 });
 
-// Initialize WebSocket when page loads
-window.addEventListener("load", initializeWebSocket);
-
 function transitionToScreen(currentScreen, newScreen) {
   currentScreen.classList.remove("active");
   newScreen.classList.add("active");
 }
 
-// Initialize
+// Initial setup //
 updateCarousel();
-fetch("/send-ttt", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ value: 1 }),
-});

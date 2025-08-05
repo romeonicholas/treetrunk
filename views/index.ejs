@@ -7,6 +7,7 @@
     <link rel="icon" href="data:," />
     <script src="/js/qrcodegen.js" defer></script>
     <script>
+      window.figureData = <%- JSON.stringify(figureData) %>;
       window.appHost = "<%= appHost %>";
       window.appPort = "<%= appPort %>";
     </script>

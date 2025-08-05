@@ -1,7 +1,7 @@
 const figureData = [
   {
     name: "Chouteau",
-    cutout: "/images/cutouts/cutoutChouteau.png",
+    cutout: "/chouteau/cutout.png",
     text: "/images/text/textChouteau.webp",
     background: "/images/backgrounds/backgroundChouteau.webp",
     cover: "/images/covers/coverChouteau.webp",

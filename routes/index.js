@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 import { fileURLToPath } from "url";
-import figureData from "../public/js/figureData.js";
+// import figureData from "../public/js/figureData.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +30,7 @@ router.post("/save-photo", (req, res) => {
 
   fs.mkdirSync(path.dirname(originalFilepath), { recursive: true });
 
+  const figureData = req.app.locals.figureData;
   const figure = figureData[figureIndex];
   if (!figure) return res.status(400).send("Invalid figure index");
 
@@ -53,6 +54,8 @@ router.post("/save-photo", (req, res) => {
 router.get("/", (request, response) => {
   const HOST = process.env.HOST || "localhost";
   const PORT = process.env.PORT || 3000;
+
+  const figureData = request.app.locals.figureData;
 
   response.render("index", {
     figureData: figureData,

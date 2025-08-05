@@ -1,4 +1,5 @@
-import figureData from "./figureData.js";
+// import figureData from "./figureData.js";
+const figureData = window.figureData;
 
 // Figure Select Elements //
 
@@ -340,7 +341,7 @@ function showCountdownTimer() {
 let webcamStream = null;
 
 function updatePhotoPreviewScreen() {
-  photoPreviewBackground.src = figureData[figureIndex].selfie;
+  photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
   spinner.style.display = "none";
 
   selfieCutout.src = figureData[figureIndex].selfieCutout;

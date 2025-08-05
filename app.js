@@ -6,6 +6,7 @@ import routes from "./routes/index.js";
 import UDPService from "./services/udpService.js";
 import WebSocketService from "./services/websocketService.js";
 import ButtonController from "./controllers/buttonController.js";
+import { scanFigureData } from "./utils/figureScanner.js";
 
 dotenv.config();
 
@@ -14,6 +15,14 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 const httpServer = createServer(app);
+
+// Build figureData from figureResources directory
+const figureData = scanFigureData();
+console.log(
+  `Found ${figureData.length} figures:`,
+  figureData.map((f) => f.name)
+);
+app.locals.figureData = figureData;
 
 // Initialize services
 const udpService = new UDPService();

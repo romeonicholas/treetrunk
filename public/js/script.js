@@ -50,11 +50,11 @@ function sendTTT(value) {
 
 // Initialization //
 
-const count = figures.length;
+const figurecount = figures.length;
 let figureIndex = 0;
 let currentPage = 0;
+let latestPhotoFilename = "";
 window.addEventListener("load", initializeWebSocket);
-sendTTT(1);
 
 // Audio //
 
@@ -80,8 +80,8 @@ function playInteractSFX() {
 
 function getDiff(i, center) {
   let diff = i - center;
-  if (diff > count / 2) diff -= count;
-  else if (diff < -count / 2) diff += count;
+  if (diff > figurecount / 2) diff -= figurecount;
+  else if (diff < -figurecount / 2) diff += figurecount;
   return diff;
 }
 
@@ -263,13 +263,13 @@ function updateCarousel(direction) {
 
 function prev() {
   playInteractSFX();
-  figureIndex = (figureIndex - 1 + count) % count;
+  figureIndex = (figureIndex - 1 + figurecount) % figurecount;
   updateCarousel(Direction.LEFT);
 }
 
 function next() {
   playInteractSFX();
-  figureIndex = (figureIndex + 1) % count;
+  figureIndex = (figureIndex + 1) % figurecount;
   updateCarousel(Direction.RIGHT);
 }
 
@@ -339,7 +339,7 @@ function showCountdownTimer() {
 
 let webcamStream = null;
 
-function showPhotoPreviewScreen() {
+function updatePhotoPreviewScreen() {
   photoPreviewBackground.src = figureData[figureIndex].selfie;
   spinner.style.display = "none";
 
@@ -437,7 +437,7 @@ function generateQRCode(filename) {
   drawCanvas(qr, 13, 1, "#FFFFFF", "#000000", qrCodeCanvas);
 }
 
-async function showPhotoReviewScreen(latestPhotoFilename) {
+async function updatePhotoReviewScreen(latestPhotoFilename) {
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
 
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
@@ -451,9 +451,13 @@ async function showPhotoReviewScreen(latestPhotoFilename) {
   }
 }
 
-let latestPhotoFilename = "";
-
 // State Control //
+
+const LightingScene = {
+  FIGURE_SELECT: 1,
+  COMIC_BOOK: 2,
+  PHOTO_PREVIEW: 3,
+};
 
 const AppState = {
   FIGURE_SELECT: "FIGURE_SELECT",
@@ -463,7 +467,7 @@ const AppState = {
   PHOTO_REVIEW: "PHOTO_REVIEW",
 };
 
-let currentState = AppState.FIGURE_SELECT;
+let currentAppState = AppState.FIGURE_SELECT;
 
 // State transition handlers
 const stateHandlers = {
@@ -471,80 +475,76 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if (figureIndex != 0) {
-        const message = document.createElement("div");
-        message.textContent =
-          "Only Yvonne Chouteau's comic is available in this hardware validation build";
-        message.style.position = "fixed";
-        message.style.top = "50%";
-        message.style.left = "50%";
-        message.style.transform = "translate(-50%, -50%)";
-        message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-        message.style.color = "white";
-        message.style.padding = "100px";
-        message.style.borderRadius = "50px";
-        message.style.fontSize = "5em";
-        message.style.zIndex = "1000";
-        document.body.appendChild(message);
-
-        setTimeout(() => {
-          document.body.removeChild(message);
-        }, 2000);
-      } else {
-        playSFX(coverpageSFX);
-        loadPages();
-        transitionToScreen(figureSelectScreen, comicBookScreen);
-        sendTTT(2);
-        currentState = AppState.COMIC_BOOK;
-      }
+      playSFX(coverpageSFX);
+      loadPages();
+      transitionAppState(
+        figureSelectScreen,
+        comicBookScreen,
+        AppState.COMIC_BOOK,
+        LightingScene.COMIC_BOOK
+      );
     },
   },
 
   [AppState.COMIC_BOOK]: {
     left: () => {
       if (currentPage <= 0) {
-        sendTTT(1);
-        transitionToScreen(comicBookScreen, figureSelectScreen);
-        currentState = AppState.FIGURE_SELECT;
+        transitionAppState(
+          comicBookScreen,
+          figureSelectScreen,
+          AppState.FIGURE_SELECT,
+          LightingScene.FIGURE_SELECT
+        );
       } else {
         flipPageBackward();
       }
     },
     right: () => {
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
-        currentState = AppState.PHOTO_PREVIEW;
-        showPhotoPreviewScreen();
-        transitionToScreen(comicBookScreen, photoPreviewScreen);
-        sendTTT(3);
+        updatePhotoPreviewScreen();
+        transitionAppState(
+          comicBookScreen,
+          photoPreviewScreen,
+          AppState.PHOTO_PREVIEW,
+          LightingScene.PHOTO_PREVIEW
+        );
       } else {
         flipPageForward();
       }
     },
     enter: () => {
-      transitionToScreen(comicBookScreen, figureSelectScreen);
-      currentState = AppState.FIGURE_SELECT;
-      sendTTT(1);
+      transitionAppState(
+        comicBookScreen,
+        figureSelectScreen,
+        AppState.FIGURE_SELECT,
+        LightingScene.FIGURE_SELECT
+      );
     },
   },
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      transitionToScreen(photoPreviewScreen, comicBookScreen);
-      currentState = AppState.COMIC_BOOK;
-      sendTTT(2);
+      transitionAppState(
+        photoPreviewScreen,
+        comicBookScreen,
+        AppState.COMIC_BOOK,
+        LightingScene.COMIC_BOOK
+      );
     },
     right: () => {},
     enter: async () => {
-      currentState = AppState.PHOTO_COUNTDOWN;
+      currentAppState = AppState.PHOTO_COUNTDOWN;
       await showCountdownTimer();
 
       latestPhotoFilename = await capturePhoto();
 
-      photoPreviewScreen.classList.remove("active");
-      photoReviewScreen.classList.add("active");
-      showPhotoReviewScreen(latestPhotoFilename);
-      sendTTT(3);
-      currentState = AppState.PHOTO_REVIEW;
+      transitionAppState(
+        photoPreviewScreen,
+        photoReviewScreen,
+        AppState.PHOTO_REVIEW,
+        LightingScene.COMIC_BOOK
+      );
+      updatePhotoReviewScreen(latestPhotoFilename);
     },
   },
 
@@ -556,22 +556,29 @@ const stateHandlers = {
 
   [AppState.PHOTO_REVIEW]: {
     left: () => {
-      showPhotoPreviewScreen();
-      transitionToScreen(photoReviewScreen, photoPreviewScreen);
-      sendTTT(3);
-      currentState = AppState.PHOTO_PREVIEW;
+      updatePhotoPreviewScreen();
+      transitionAppState(
+        photoReviewScreen,
+        photoPreviewScreen,
+        AppState.PHOTO_PREVIEW,
+        LightingScene.PHOTO_PREVIEW
+      );
     },
     right: () => {
-      photoReviewScreen.classList.remove("active");
-      figureSelectScreen.classList.add("active");
-      sendTTT(1);
-      currentState = AppState.FIGURE_SELECT;
+      transitionAppState(
+        photoReviewScreen,
+        figureSelectScreen,
+        AppState.FIGURE_SELECT,
+        LightingScene.FIGURE_SELECT
+      );
     },
     enter: () => {
-      photoReviewScreen.classList.remove("active");
-      figureSelectScreen.classList.add("active");
-      sendTTT(1);
-      currentState = AppState.FIGURE_SELECT;
+      transitionAppState(
+        photoReviewScreen,
+        figureSelectScreen,
+        AppState.FIGURE_SELECT,
+        LightingScene.FIGURE_SELECT
+      );
     },
   },
 };
@@ -612,10 +619,10 @@ function initializeWebSocket() {
 }
 
 async function handleInput(action) {
-  const handler = stateHandlers[currentState];
+  const handler = stateHandlers[currentAppState];
 
   if (!handler) {
-    console.error(`No handler for state: ${currentState}`);
+    console.error(`No handler for state: ${currentAppState}`);
     return;
   }
 
@@ -650,10 +657,13 @@ window.addEventListener("keydown", async (e) => {
   }
 });
 
-function transitionToScreen(currentScreen, newScreen) {
+function transitionAppState(currentScreen, newScreen, appState, lightingScene) {
   currentScreen.classList.remove("active");
   newScreen.classList.add("active");
+  currentAppState = appState;
+  sendTTT(lightingScene || 0);
 }
 
 // Initial setup //
 updateCarousel();
+sendTTT(LightingScene.FIGURE_SELECT);

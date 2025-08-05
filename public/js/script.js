@@ -54,6 +54,7 @@ function sendTTT(value) {
 const figurecount = figures.length;
 let figureIndex = 0;
 let currentPage = 0;
+let webcamStream = null;
 let latestPhotoFilename = "";
 window.addEventListener("load", initializeWebSocket);
 
@@ -338,8 +339,6 @@ function showCountdownTimer() {
   });
 }
 
-let webcamStream = null;
-
 function updatePhotoPreviewScreen() {
   photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
   spinner.style.display = "none";
@@ -467,8 +466,6 @@ const AppState = {
   PHOTO_COUNTDOWN: "PHOTO_COUNTDOWN",
   PHOTO_REVIEW: "PHOTO_REVIEW",
 };
-
-let currentAppState = AppState.FIGURE_SELECT;
 
 // State transition handlers
 const stateHandlers = {
@@ -669,3 +666,4 @@ function transitionAppState(currentScreen, newScreen, appState, lightingScene) {
 // Initial setup //
 updateCarousel();
 sendTTT(LightingScene.FIGURE_SELECT);
+let currentAppState = AppState.FIGURE_SELECT;

@@ -525,6 +525,7 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
+      stopWebcam();
       transitionAppState(
         photoPreviewScreen,
         comicBookScreen,

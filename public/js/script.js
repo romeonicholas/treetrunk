@@ -53,6 +53,7 @@ function sendTTT(value) {
 
 const figurecount = figures.length;
 let figureIndex = 0;
+let isAnimating = false;
 let currentPage = 0;
 let webcamStream = null;
 let latestPhotoFilename = "";
@@ -234,6 +235,13 @@ function applyFigureClasses(
 }
 
 function updateCarousel(direction) {
+  if (isAnimating) {
+    console.log("Animation in progress, ignoring input");
+    return;
+  }
+
+  isAnimating = true;
+
   figures.forEach((figure, i) => {
     figure.classList.remove(...transformClasses);
     figure.firstElementChild.classList.remove(...scaleClasses);
@@ -261,15 +269,23 @@ function updateCarousel(direction) {
     else if (diff === 0) text.classList.add("center-text", "ease-in-text");
     else if (diff >= 1) text.classList.add("off-right-text", "ease-out-text");
   });
+
+  setTimeout(() => {
+    isAnimating = false;
+  }, 1000);
 }
 
 function prev() {
+  if (isAnimating) return;
+
   playInteractSFX();
   figureIndex = (figureIndex - 1 + figurecount) % figurecount;
   updateCarousel(Direction.LEFT);
 }
 
 function next() {
+  if (isAnimating) return;
+
   playInteractSFX();
   figureIndex = (figureIndex + 1) % figurecount;
   updateCarousel(Direction.RIGHT);

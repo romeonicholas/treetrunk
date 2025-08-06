@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Flip Test</title>
+    <style>
+      #page-flip {
+        background-color: #d0d0d0;
+        opacity: 1;
+        position: absolute;
+        transform: translate(2240px, 0px);
+        width: 10px;
+        height: 3600px;
+        box-shadow: inset -100px 0px 100px rgba(0, 0, 0, 0.15),
+          20px 0px 100px rgba(0, 0, 0, 1);
+        z-index: 10;
+        will-change: transform, width;
+        transition: transform 750ms ease-in, width 750ms ease-in;
+        backface-visibility: hidden;
+      }
+
+      #page-flip.turned {
+        transform: translate(-1110px, 0px);
+        width: 1080px;
+        height: 3600px;
+      }
+
+      #cover-page {
+        position: absolute;
+        width: 2160px;
+        height: 3600px;
+        z-index: 5;
+        clip-path: rect(0 2160px 3600px 0);
+        transition: 700ms ease-in;
+        transition-delay: 40ms;
+      }
+
+      #cover-page.hidden {
+        clip-path: rect(0 0 3600px 0);
+      }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0; overflow: hidden">
+    <div>
+      <div id="page-flip"></div>
+      <img
+        id="cover-page"
+        src="public/figureResources/chouteau_yvonne/cover.webp"
+      />
+
+      <img
+        src="public/figureResources/chouteau_yvonne/page1.webp"
+        style="
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 2160px;
+          height: 3600px;
+          z-index: 4;
+        "
+      />
+    </div>
+    <img
+      src="public/images/ui/figureFooter.png"
+      alt="Footer"
+      style="position: absolute; left: 0; bottom: 0; width: 100%"
+    />
+    <script>
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          const pageFlip = document.getElementById("page-flip");
+          pageFlip.classList.toggle("turned");
+          const coverPage = document.getElementById("cover-page");
+          coverPage.classList.toggle("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

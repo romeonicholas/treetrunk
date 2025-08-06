@@ -74,10 +74,6 @@ body {
   z-index: var(--z-figure-select);
 }
 
-#comic-book {
-  z-index: var(--z-comic-book);
-}
-
 .figure-carousel-container {
   width: 100%;
 }
@@ -194,8 +190,50 @@ body {
   opacity: 0;
 }
 
+#comic-book {
+  z-index: var(--z-comic-book);
+}
+
 .comic-cover-el {
   z-index: var(--z-carousel-comic-cover);
+}
+
+.comic-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  clip-path: rect(0 2160px 3600px 0);
+  transition: 700ms ease-in;
+  transition-delay: 40ms;
+}
+
+.comic-page.turned {
+  clip-path: rect(0 0 3600px 0);
+}
+
+#page-flip {
+  background-color: #d0d0d0;
+  opacity: 1;
+  position: absolute;
+  transform: translate(2240px, 0px);
+  width: 10px;
+  height: 3600px;
+  box-shadow: inset -100px 0px 100px rgba(0, 0, 0, 0.15),
+    20px 0px 100px rgba(0, 0, 0, 1);
+  z-index: 30;
+  will-change: transform, width;
+  transition: transform 750ms ease-in, width 750ms ease-in;
+  backface-visibility: hidden;
+}
+
+#page-flip.turned {
+  transform: translate(-1110px, 0px);
+  width: 1080px;
+  height: 3600px;
+}
+
+.page-flip-reset {
+  transition: none !important;
 }
 
 #video-element {

@@ -13,6 +13,7 @@ const texts = Array.from(document.querySelectorAll(".carousel-text"));
 
 const comicBookScreen = document.getElementById("comic-book-screen");
 const comicPages = document.getElementById("comic-pages");
+const pageFlip = document.getElementById("page-flip");
 
 // Photo Preview Elements //
 
@@ -301,6 +302,7 @@ function loadPages() {
   pages.forEach((page, index) => {
     const img = document.createElement("img");
     img.src = page;
+    img.classList.add("comic-page");
     img.style.zIndex = 12 - index;
     comicPages.appendChild(img);
   });
@@ -308,13 +310,24 @@ function loadPages() {
 
 function flipPageForward() {
   playSFX(pageFlipSFX);
-
   currentPage++;
   const pages = comicPages.querySelectorAll("img");
+
   if (currentPage < pages.length) {
     pages[currentPage].style.display = "block";
+    if (pageFlip.classList.contains("turned")) {
+      pageFlip.classList.add("page-flip-reset");
+      pageFlip.classList.remove("turned");
+      pageFlip.offsetHeight;
+      pageFlip.classList.remove("page-flip-reset");
+      pageFlip.classList.add("turned");
+    } else {
+      pageFlip.classList.add("turned");
+    }
+
     if (currentPage > 0) {
-      pages[currentPage - 1].style.display = "none";
+      // pages[currentPage - 1].style.display = "none";
+      pages[currentPage - 1].classList.add("turned");
     }
   }
 }
@@ -323,10 +336,20 @@ function flipPageBackward() {
   if (currentPage > 0) {
     playSFX(pageFlipSFX);
 
+    if (pageFlip.classList.contains("turned")) {
+      pageFlip.classList.remove("turned");
+    } else {
+      pageFlip.classList.add("page-flip-reset");
+      pageFlip.classList.add("turned");
+      pageFlip.offsetHeight; // Trigger reflow
+      pageFlip.classList.remove("page-flip-reset");
+      pageFlip.classList.remove("turned");
+    }
     const pages = comicPages.querySelectorAll("img");
-    pages[currentPage].style.display = "none";
+    // pages[currentPage].style.display = "none";
     currentPage--;
     pages[currentPage].style.display = "block";
+    pages[currentPage].classList.remove("turned");
   }
 }
 

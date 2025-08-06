@@ -244,8 +244,10 @@ body {
 
 #selfie-cutout {
   position: absolute;
-  left: 885px;
-  top: 805px;
+  left: 700px;
+  top: 720px;
+  width: 930px;
+  height: 2976px;
   z-index: 1;
 }
 

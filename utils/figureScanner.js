@@ -35,15 +35,15 @@ function createFigureConfig(name, figurePath) {
   try {
     const files = fs.readdirSync(figurePath);
 
-    // Define expected file patterns
+    // Expected file patterns
     const filePatterns = {
-      cutout: /^cutout\.(png|webp|jpg)$/i,
-      text: /^text\.(png|webp|jpg)$/i,
-      background: /^background\.(png|webp|jpg)$/i,
-      cover: /^cover\.(png|webp|jpg)$/i,
-      selfiePreview: /^selfie_preview\.(png|webp|jpg)$/i,
-      selfieReview: /^selfie_review\.(png|webp|jpg)$/i,
-      selfieCutout: /^selfie_cutout\.(png|webp|jpg)$/i,
+      cutout: /^cutout\.webp$/i,
+      text: /^text\.webp$/i,
+      background: /^background\.webp$/i,
+      cover: /^cover\.webp$/i,
+      selfiePreview: /^selfie_preview\.webp$/i,
+      selfieReview: /^selfie_review\.webp$/i,
+      //   selfieCutout: /^selfie_cutout\.webp$/i,
     };
 
     // Find files matching patterns
@@ -65,21 +65,18 @@ function createFigureConfig(name, figurePath) {
       })
       .map((file) => `/figureResources/${name}/${file}`);
 
-    // Add cover as first page if it exists
-    const pages = figureFiles.cover
-      ? [figureFiles.cover, ...pageFiles]
-      : pageFiles;
+    const pages = [figureFiles.cover, ...pageFiles];
 
     return {
-      name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize name
-      cutout: figureFiles.cutout || null,
-      text: figureFiles.text || null,
-      background: figureFiles.background || null,
-      cover: figureFiles.cover || null,
+      name: name,
+      cutout: figureFiles.cutout,
+      text: figureFiles.text,
+      background: figureFiles.background,
+      cover: figureFiles.cover,
       pages: pages,
-      selfiePreview: figureFiles.selfiePreview || null,
-      selfieReview: figureFiles.selfieReview || null,
-      selfieCutout: figureFiles.selfieCutout || null,
+      selfiePreview: figureFiles.selfiePreview,
+      selfieReview: figureFiles.selfieReview,
+      //   selfieCutout: figureFiles.selfieCutout,
     };
   } catch (error) {
     console.error(`Error processing figure folder ${name}:`, error);

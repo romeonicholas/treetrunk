@@ -357,12 +357,11 @@ function showCountdownTimer() {
 
 function updatePhotoPreviewScreen() {
   photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
+  selfieCutout.src = figureData[figureIndex].cutout;
+
   spinner.style.display = "none";
-
-  selfieCutout.src = figureData[figureIndex].selfieCutout;
-
   photoCanvas.style.display = "none";
-  let video = document.querySelector("#video-element");
+
   video.style.display = "block";
 
   if (navigator.mediaDevices.getUserMedia) {

@@ -43,6 +43,7 @@ function createFigureConfig(name, figurePath) {
       cover: /^cover\.webp$/i,
       selfiePreview: /^selfie_preview\.webp$/i,
       selfieReview: /^selfie_review\.webp$/i,
+      selfieFrame: /^selfie_frame\.webp$/i,
     };
 
     // Find files matching patterns
@@ -75,6 +76,7 @@ function createFigureConfig(name, figurePath) {
       pages: pages,
       selfiePreview: figureFiles.selfiePreview,
       selfieReview: figureFiles.selfieReview,
+      selfieFrame: figureFiles.selfieFrame,
     };
   } catch (error) {
     console.error(`Error processing figure folder ${name}:`, error);

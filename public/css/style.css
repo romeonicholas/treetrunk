@@ -242,10 +242,10 @@ body {
 
 #video-element {
   position: absolute;
-  top: 806px;
-  left: 382px;
-  width: 2080px;
-  height: 1920px;
+  left: 2013px;
+  top: 2720px;
+  transform-origin: top left;
+  transform: scaleX(-1) rotate(-90deg);
 }
 
 .photo-review-screen {
@@ -278,10 +278,10 @@ body {
 #canvas-element {
   display: none;
   position: absolute;
-  top: 806px;
-  left: 382px;
-  width: 2080px;
-  height: 1920px;
+  left: 2013px;
+  top: 2720px;
+  transform-origin: top left;
+  transform: scaleX(-1) rotate(-90deg);
 }
 
 #selfie-cutout {

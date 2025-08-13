@@ -28,7 +28,7 @@
   --z-carousel-comic-cover: 5;
 
   /* UI layers */
-  --z-video: 10;
+  --z-video: 3;
   --z-countdown: 20;
   --z-qr-code: 100;
   --z-spinner: 10000;
@@ -199,6 +199,7 @@ body {
 }
 
 .comic-page {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -246,6 +247,7 @@ body {
   top: 2720px;
   transform-origin: top left;
   transform: scaleX(-1) rotate(-90deg);
+  z-index: var(--z-video);
 }
 
 .photo-review-screen {
@@ -290,7 +292,7 @@ body {
   top: 720px;
   width: 930px;
   height: 2976px;
-  z-index: 1;
+  z-index: 4;
 }
 
 #countdown {
@@ -336,5 +338,5 @@ body {
   width: 400px;
   height: 400px;
   z-index: var(--z-qr-code);
-  background: white;
+  background: #dcc8e2;
 }

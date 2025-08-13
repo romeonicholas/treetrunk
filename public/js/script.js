@@ -299,13 +299,32 @@ function loadPages() {
 
   comicPages.innerHTML = "";
 
-  pages.forEach((page, index) => {
+  let index = 0;
+  pages.forEach((page) => {
     const img = document.createElement("img");
-    img.src = page;
     img.classList.add("comic-page");
+    img.src = page;
     img.style.zIndex = 12 - index;
+    if (index === 0) {
+      img.style.display = "block";
+    }
+    index++;
     comicPages.appendChild(img);
   });
+
+
+  const previewImg = document.createElement("img");
+  previewImg.src = currentFigure.selfiePreview;
+  previewImg.classList.add("comic-page");
+  previewImg.style.zIndex = 12 - index;
+  index++;
+  comicPages.appendChild(previewImg);
+
+  const reviewImg = document.createElement("img");
+  reviewImg.src = currentFigure.selfieReview;
+  reviewImg.classList.add("comic-page");
+  reviewImg.style.zIndex = 12 - index;
+  comicPages.appendChild(reviewImg);
 }
 
 function flipPageForward() {
@@ -355,7 +374,8 @@ function flipPageBackward() {
 
 function showCountdownTimer() {
   return new Promise((resolve) => {
-    let timeleft = 2;
+    let timeleft = 4;
+
     countdown.innerHTML = 3;
 
     countdownSFX.currentTime = 0;
@@ -472,13 +492,13 @@ function generateQRCode(filename) {
     return;
   }
 
-  drawCanvas(qr, 13, 1, "#FFFFFF", "#000000", qrCodeCanvas);
+  drawCanvas(qr, 13, 1, "#c2cae9", "#000000", qrCodeCanvas);
 }
 
 async function updatePhotoReviewScreen(latestPhotoFilename) {
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
-
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
+
   try {
     const photoPath = await latestPhotoFilename;
     generateQRCode(
@@ -536,14 +556,22 @@ const stateHandlers = {
       }
     },
     right: () => {
+      if (currentPage >= figureData[figureIndex].pages.length - 2) {
+        updatePhotoPreviewScreen();
+      }
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
         updatePhotoPreviewScreen();
-        transitionAppState(
-          comicBookScreen,
-          photoPreviewScreen,
-          AppState.PHOTO_PREVIEW,
-          LightingScene.PHOTO_PREVIEW
-        );
+        flipPageForward()
+        
+          // transitionAppState(
+          //   comicBookScreen,
+          //   photoPreviewScreen,
+          //   AppState.PHOTO_PREVIEW,
+          //   LightingScene.PHOTO_PREVIEW
+          // );
+        photoPreviewScreen.classList.add("active");
+        currentAppState = AppState.PHOTO_PREVIEW;
+        sendTTT(LightingScene.PHOTO_PREVIEW);
       } else {
         flipPageForward();
       }
@@ -561,27 +589,34 @@ const stateHandlers = {
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
       stopWebcam();
-      transitionAppState(
-        photoPreviewScreen,
-        comicBookScreen,
-        AppState.COMIC_BOOK,
-        LightingScene.COMIC_BOOK
-      );
+      currentAppState = AppState.COMIC_BOOK;
+      sendTTT(LightingScene.COMIC_BOOK);
+      // transitionAppState(
+      //   photoPreviewScreen,
+      //   comicBookScreen,
+      //   AppState.COMIC_BOOK,
+      //   LightingScene.COMIC_BOOK
+      // );
     },
     right: () => {},
     enter: async () => {
       currentAppState = AppState.PHOTO_COUNTDOWN;
       await showCountdownTimer();
-
       latestPhotoFilename = await capturePhoto();
-
-      transitionAppState(
-        photoPreviewScreen,
-        photoReviewScreen,
-        AppState.PHOTO_REVIEW,
-        LightingScene.COMIC_BOOK
-      );
+      
+      photoReviewScreen.classList.add("active");
       updatePhotoReviewScreen(latestPhotoFilename);
+      flipPageForward();
+      photoPreviewScreen.classList.remove("active");
+      currentAppState = AppState.PHOTO_REVIEW;
+      sendTTT(LightingScene.COMIC_BOOK);
+      // transitionAppState(
+      //   photoPreviewScreen,
+      //   photoReviewScreen,
+      //   AppState.PHOTO_REVIEW,
+      //   LightingScene.COMIC_BOOK
+      // );
+      
     },
   },
 
@@ -594,12 +629,16 @@ const stateHandlers = {
   [AppState.PHOTO_REVIEW]: {
     left: () => {
       updatePhotoPreviewScreen();
-      transitionAppState(
-        photoReviewScreen,
-        photoPreviewScreen,
-        AppState.PHOTO_PREVIEW,
-        LightingScene.PHOTO_PREVIEW
-      );
+      currentAppState = AppState.PHOTO_PREVIEW;
+      sendTTT(LightingScene.PHOTO_PREVIEW);
+      // transitionAppState(
+      //   photoReviewScreen,
+      //   photoPreviewScreen,
+      //   AppState.PHOTO_PREVIEW,
+      //   LightingScene.PHOTO_PREVIEW
+      // );
+      comicBookScreen.classList.remove("active");
+      photoPreviewScreen.classList.add("active");
     },
     right: () => {
       transitionAppState(

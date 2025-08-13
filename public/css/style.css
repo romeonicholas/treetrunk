@@ -242,7 +242,7 @@ body {
 
 #video-element {
   position: absolute;
-  left: 2013px;
+  left: 2010px;
   top: 2720px;
   transform-origin: top left;
   transform: scaleX(-1) rotate(-90deg);
@@ -331,10 +331,10 @@ body {
 
 #qr-code {
   position: absolute;
-  top: 1719px;
-  left: 255px;
-  width: 500px;
-  height: 500px;
+  top: 2912px;
+  left: 995px;
+  width: 400px;
+  height: 400px;
   z-index: var(--z-qr-code);
   background: white;
 }

@@ -203,8 +203,12 @@ body {
   top: 0;
   left: 0;
   clip-path: rect(0 2160px 3600px 0);
-  transition: 700ms ease-in;
-  transition-delay: 40ms;
+  will-change: clip-path; /* Tell browser this property will change */
+  transform: translateZ(0); /* Force GPU layer */
+  backface-visibility: hidden; /* Prevent flicker */
+  contain: layout style paint; /* Isolate rendering context */
+  transition: 600ms ease-in;
+  transition-delay: 20ms;
 }
 
 .comic-page.turned {

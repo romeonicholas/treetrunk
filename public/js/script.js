@@ -391,12 +391,12 @@ function updatePhotoPreviewScreen() {
     video.onloadedmetadata = () => {
       console.log(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`);
     };
-    navigator.mediaDevices
-      .getUserMedia({
+    navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 1080 },
-          height: { ideal: 1920 },
-        },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          aspectRatio: 9 / 16
+        }
       })
       .then(function (stream) {
         video.srcObject = stream;

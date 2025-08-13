@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,8 @@ export function scanFigureData() {
   return figureData;
 }
 
+
+
 function createFigureConfig(name, figurePath) {
   try {
     const files = fs.readdirSync(figurePath);
@@ -38,12 +41,14 @@ function createFigureConfig(name, figurePath) {
     // Expected file patterns
     const filePatterns = {
       cutout: /^cutout\.webp$/i,
+      cutoutPNG: /^cutout\.png$/i,
       text: /^text\.webp$/i,
       background: /^background\.webp$/i,
       cover: /^cover\.webp$/i,
       selfiePreview: /^selfie_preview\.webp$/i,
       selfieReview: /^selfie_review\.webp$/i,
       selfieFrame: /^selfie_frame\.webp$/i,
+      selfieFramePNG: /^selfie_frame\.png$/i
     };
 
     // Find files matching patterns
@@ -67,9 +72,22 @@ function createFigureConfig(name, figurePath) {
 
     const pages = [figureFiles.cover, ...pageFiles];
 
+    
+    const overlayScript = path.resolve("./create-selfie-overlay.ps1");
+    const overlayCommand = `powershell -ExecutionPolicy Bypass -File "${overlayScript}" "${figurePath}"`;
+
+    const selfieFramePath = path.join(figurePath, "selfie_frame.png");
+    const cutoutPath = path.join(figurePath, "cutout.png");
+
+    // Only run the overlay script if either file does NOT exist
+    if (!fs.existsSync(selfieFramePath) || !fs.existsSync(cutoutPath)) {
+      execSync(overlayCommand);
+    }
+
     return {
       name: name,
       cutout: figureFiles.cutout,
+      cutoutPNG: figureFiles.cutoutPNG,
       text: figureFiles.text,
       background: figureFiles.background,
       cover: figureFiles.cover,
@@ -77,6 +95,8 @@ function createFigureConfig(name, figurePath) {
       selfiePreview: figureFiles.selfiePreview,
       selfieReview: figureFiles.selfieReview,
       selfieFrame: figureFiles.selfieFrame,
+      selfieFramePNG: figureFiles.selfieFramePNG,
+      selfieOverlay: `/figureResources/${name}/overlay.png`
     };
   } catch (error) {
     console.error(`Error processing figure folder ${name}:`, error);

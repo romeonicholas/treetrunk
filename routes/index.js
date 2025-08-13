@@ -34,9 +34,9 @@ router.post("/save-photo", (req, res) => {
   const figure = figureData[figureIndex];
   if (!figure) return res.status(400).send("Invalid figure index");
 
-  const cutoutPath = path.join(__dirname, "../public", figure.cutout);
-  const script = path.resolve("./edit-photo.ps1");
-  const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${cutoutPath}"`;
+  const overlayPath = path.join(__dirname, "../public", figure.selfieOverlay);
+  const script = path.resolve("./edit-user-photo.ps1");
+  const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${overlayPath}"`;
 
   fs.writeFile(originalFilepath, buffer, (err) => {
     if (err) return res.status(500).send("Failed to save");

@@ -375,8 +375,7 @@ function flipPageBackward() {
 function showCountdownTimer() {
   return new Promise((resolve) => {
     let timeleft = 4;
-
-    countdown.innerHTML = 3;
+    countdown.src = `/images/ui/countdown/countdown_5.webp`;
 
     countdownSFX.currentTime = 0;
     countdownSFX.play();
@@ -384,17 +383,17 @@ function showCountdownTimer() {
     let photoTimer = setInterval(function () {
       if (timeleft <= 0) {
         clearInterval(photoTimer);
-        countdown.innerHTML = "";
+        countdown.src = "/images/ui/countdown/countdown_click.webp";
         photoSFX.currentTime = 0;
         photoSFX.play();
         resolve();
       } else {
-        countdown.innerHTML = timeleft;
+        countdown.src = `/images/ui/countdown/countdown_${timeleft}.webp`;
         countdownSFX.currentTime = 0;
         countdownSFX.play();
       }
       timeleft -= 1;
-    }, 1150);
+    }, 1000);
   });
 }
 
@@ -498,6 +497,11 @@ function generateQRCode(filename) {
 async function updatePhotoReviewScreen(latestPhotoFilename) {
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
+
+  
+  editedPhoto.classList.add("show");
+  qrCodeCanvas.classList.add("show");
+
 
   try {
     const photoPath = await latestPhotoFilename;
@@ -603,11 +607,12 @@ const stateHandlers = {
       currentAppState = AppState.PHOTO_COUNTDOWN;
       await showCountdownTimer();
       latestPhotoFilename = await capturePhoto();
-      
+      await updatePhotoReviewScreen(latestPhotoFilename);
       photoReviewScreen.classList.add("active");
-      updatePhotoReviewScreen(latestPhotoFilename);
-      flipPageForward();
       photoPreviewScreen.classList.remove("active");
+      flipPageForward();
+      
+
       currentAppState = AppState.PHOTO_REVIEW;
       sendTTT(LightingScene.COMIC_BOOK);
       // transitionAppState(

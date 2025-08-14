@@ -252,14 +252,11 @@ body {
 
 .photo-review-screen {
   opacity: 0;
+  transition: opacity .6s ease-out;
   visibility: hidden;
   height: 100%;
   width: 100%;
-}
-
-.show {
-  opacity: 1;
-  visibility: visible;
+  z-index: 4;
 }
 
 #photo-display-screen {
@@ -296,12 +293,9 @@ body {
 }
 
 #countdown {
-  font-family: primaryFont;
-  font-size: 800px;
-  color: white;
   position: absolute;
-  top: 1250px;
-  left: 1250px;
+  top: 796px;
+  left: 146px;
   z-index: var(--z-countdown);
 }
 
@@ -331,7 +325,21 @@ body {
   width: 100%;
 }
 
-#qr-code {
+.edited-photo {
+  opacity: 0;
+  transition: opacity ease-out 1.25s;
+  transition-delay: 250ms;
+  position: absolute;
+  left: 883px;
+  top: 862px;
+  width: 1080px;
+  z-index: 5;
+}
+
+.qr-code {
+  opacity: 0;
+  transition: opacity ease-out 1.25s;
+  transition-delay: 250ms;
   position: absolute;
   top: 2912px;
   left: 995px;
@@ -339,4 +347,9 @@ body {
   height: 400px;
   z-index: var(--z-qr-code);
   background: #dcc8e2;
+}
+
+.show {
+  opacity: 1;
+  visibility: visible;
 }

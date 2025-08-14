@@ -332,8 +332,12 @@ function flipPageForward() {
   isAnimating = true;
   
   playSFX(pageFlipSFX);
-  currentPage++;
+  
+  
   const pages = comicPages.querySelectorAll("img");
+  pages[currentPage].classList.remove("back");
+  currentPage++;
+
 
   if (currentPage < pages.length) {
     pages[currentPage].style.display = "block";
@@ -374,6 +378,7 @@ function flipPageBackward() {
     const pages = comicPages.querySelectorAll("img");
     // pages[currentPage].style.display = "none";
     currentPage--;
+    pages[currentPage].classList.add("back");
     pages[currentPage].style.display = "block";
     pages[currentPage].classList.remove("turned");
   }

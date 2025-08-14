@@ -212,6 +212,11 @@ body {
   transition-delay: 20ms;
 }
 
+.comic-page.back {
+    transition: 445.13ms ease-in;
+    transition-delay: 273.9285714285714ms;
+}
+
 .comic-page.turned {
   clip-path: rect(0 0 3600px 0);
 }

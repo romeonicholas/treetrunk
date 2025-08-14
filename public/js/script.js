@@ -22,7 +22,7 @@ const photoPreviewBackground = document.getElementById(
   "photo-preview-background"
 );
 const countdown = document.getElementById("countdown");
-const spinner = document.getElementById("spinner");
+// const spinner = document.getElementById("spinner");
 const selfieCutout = document.getElementById("selfie-cutout");
 const video = document.getElementById("video-element");
 const photoCanvas = document.getElementById("canvas-element");
@@ -328,6 +328,9 @@ function loadPages() {
 }
 
 function flipPageForward() {
+  if (isAnimating) return;
+  isAnimating = true;
+  
   playSFX(pageFlipSFX);
   currentPage++;
   const pages = comicPages.querySelectorAll("img");
@@ -349,6 +352,10 @@ function flipPageForward() {
       pages[currentPage - 1].classList.add("turned");
     }
   }
+
+  setTimeout(() => {
+    isAnimating = false;
+  }, 750);
 }
 
 function flipPageBackward() {
@@ -401,7 +408,7 @@ function updatePhotoPreviewScreen() {
   photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
   selfieCutout.src = figureData[figureIndex].cutout;
 
-  spinner.style.display = "none";
+  // spinner.style.display = "none";
   photoCanvas.style.display = "none";
 
   video.style.display = "block";
@@ -452,7 +459,7 @@ function capturePhoto() {
   const photoDataUrl = photoCanvas.toDataURL("image/jpeg");
 
   stopWebcam();
-  spinner.style.display = "block";
+  // spinner.style.display = "block";
 
   return fetch("/save-photo", {
     method: "POST",
@@ -700,6 +707,11 @@ function initializeWebSocket() {
 }
 
 async function handleInput(action) {
+  if (isAnimating) {
+    console.log("Animation in progress, ignoring input");
+    return;
+  }
+
   const handler = stateHandlers[currentAppState];
 
   if (!handler) {

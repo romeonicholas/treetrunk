@@ -62,7 +62,7 @@ function createFigureConfig(name, figurePath) {
 
     // Find pages (numbered files like page1.webp, page2.webp, etc.)
     const pageFiles = files
-      .filter((file) => /^page\d+\.(png|webp|jpg)$/i.test(file))
+      .filter((file) => /^page\d+\.(webp)$/i.test(file))
       .sort((a, b) => {
         const numA = parseInt(a.match(/\d+/)[0]);
         const numB = parseInt(b.match(/\d+/)[0]);

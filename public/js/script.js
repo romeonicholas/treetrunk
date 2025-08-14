@@ -456,7 +456,7 @@ function capturePhoto() {
   photoCanvas.width = video.videoWidth;
   photoCanvas.height = video.videoHeight;
   photoCanvas.getContext("2d").drawImage(video, 0, 0);
-  const photoDataUrl = photoCanvas.toDataURL("image/jpeg");
+  const photoDataUrl = photoCanvas.toDataURL("image/png");
 
   stopWebcam();
   // spinner.style.display = "block";
@@ -616,8 +616,9 @@ const stateHandlers = {
       latestPhotoFilename = await capturePhoto();
       await updatePhotoReviewScreen(latestPhotoFilename);
       photoReviewScreen.classList.add("active");
-      photoPreviewScreen.classList.remove("active");
       flipPageForward();
+      photoPreviewScreen.classList.remove("active");
+
       
 
       currentAppState = AppState.PHOTO_REVIEW;

@@ -12,11 +12,11 @@ const router = express.Router();
 
 router.post("/save-photo", (req, res) => {
   const { image, figureIndex } = req.body;
-  const matches = image.match(/^data:image\/jpeg;base64,(.+)$/);
+  const matches = image.match(/^data:image\/png;base64,(.+)$/);
   if (!matches) return res.status(400).send("Invalid image data");
 
   const buffer = Buffer.from(matches[1], "base64");
-  const filename = `${Date.now()}.jpg`;
+  const filename = `${Date.now()}.png`;
   const originalFilepath = path.join(
     __dirname,
     "../public/originalUserPhotos",

@@ -544,7 +544,7 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if (figureData[figureIndex] === 0) {
+      if (figureIndex == 0) {
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(
@@ -554,7 +554,6 @@ const stateHandlers = {
           LightingScene.COMIC_BOOK
         );
       }
-
     },
   },
 
@@ -575,16 +574,15 @@ const stateHandlers = {
       }
     },
     right: () => {
-
       if (currentPage == figureData[figureIndex].pages.length - 2) {
-        console.log("prepped photo preview")
+        console.log("prepped photo preview");
         updatePhotoPreviewScreen();
       }
 
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
-      // updatePhotoPreviewScreen();
+        // updatePhotoPreviewScreen();
         flipPageForward();
-        
+
         // transitionAppState(
         //   comicBookScreen,
         //   photoPreviewScreen,
@@ -631,7 +629,7 @@ const stateHandlers = {
         countdown.src = "";
       }, 500);
       photoReviewScreen.classList.add("active");
-        flipPageForward();
+      flipPageForward();
       // photoPreviewScreen.classList.remove("active");
       // comicBookScreen.classList.remove("active");
 
@@ -671,9 +669,7 @@ const stateHandlers = {
     right: () => {
       figureSelectScreen.classList.add("active");
 
-      comicBookScreen.classList.add(
-        "fast-fade"
-      )
+      comicBookScreen.classList.add("fast-fade");
       photoPreviewScreen.classList.add("fast-fade");
 
       comicBookScreen.classList.remove("active");

@@ -514,7 +514,7 @@ async function updatePhotoReviewScreen(latestPhotoFilename) {
   try {
     const photoPath = await latestPhotoFilename;
     generateQRCode(
-      `http://${window.appHost}:${window.appPort}/download/${photoPath}`
+      `http://10.62.0.227:${window.appPort}/download/${photoPath}`
     );
   } catch (error) {
     console.error("Error resolving photo promise:", error);

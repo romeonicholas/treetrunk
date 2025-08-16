@@ -65,7 +65,7 @@ window.addEventListener("load", initializeWebSocket);
 const interactSFX = new Audio("/audio/clickButton.wav");
 const coverpageSFX = new Audio("/audio/showCover.wav");
 
-const pageFlipSFX = new Audio("/audio/pageFlip.mp3");
+const pageFlipSFX = new Audio("/audio/pageFlip.wav");
 
 const countdownSFX = new Audio("/audio/countdownBeep.mp3");
 const photoSFX = new Audio("/audio/photoSnap.mp3");
@@ -312,7 +312,6 @@ function loadPages() {
     comicPages.appendChild(img);
   });
 
-
   const previewImg = document.createElement("img");
   previewImg.src = currentFigure.selfiePreview;
   previewImg.classList.add("comic-page");
@@ -330,14 +329,12 @@ function loadPages() {
 function flipPageForward() {
   if (isAnimating) return;
   isAnimating = true;
-  
+
   playSFX(pageFlipSFX);
-  
-  
+
   const pages = comicPages.querySelectorAll("img");
   pages[currentPage].classList.remove("back");
   currentPage++;
-
 
   if (currentPage < pages.length) {
     pages[currentPage].style.display = "block";
@@ -422,12 +419,13 @@ function updatePhotoPreviewScreen() {
     video.onloadedmetadata = () => {
       console.log(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`);
     };
-    navigator.mediaDevices.getUserMedia({
+    navigator.mediaDevices
+      .getUserMedia({
         video: {
           width: { ideal: 1920 },
           height: { ideal: 1080 },
-          aspectRatio: 9 / 16
-        }
+          aspectRatio: 9 / 16,
+        },
       })
       .then(function (stream) {
         video.srcObject = stream;
@@ -510,10 +508,8 @@ async function updatePhotoReviewScreen(latestPhotoFilename) {
   photoReviewBackground.src = figureData[figureIndex].selfieReview;
   editedPhoto.src = `/editedUserPhotos/${latestPhotoFilename}`;
 
-  
   editedPhoto.classList.add("show");
   qrCodeCanvas.classList.add("show");
-
 
   try {
     const photoPath = await latestPhotoFilename;
@@ -577,14 +573,14 @@ const stateHandlers = {
       }
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
         updatePhotoPreviewScreen();
-        flipPageForward()
-        
-          // transitionAppState(
-          //   comicBookScreen,
-          //   photoPreviewScreen,
-          //   AppState.PHOTO_PREVIEW,
-          //   LightingScene.PHOTO_PREVIEW
-          // );
+        flipPageForward();
+
+        // transitionAppState(
+        //   comicBookScreen,
+        //   photoPreviewScreen,
+        //   AppState.PHOTO_PREVIEW,
+        //   LightingScene.PHOTO_PREVIEW
+        // );
         photoPreviewScreen.classList.add("active");
         currentAppState = AppState.PHOTO_PREVIEW;
         sendTTT(LightingScene.PHOTO_PREVIEW);
@@ -624,8 +620,6 @@ const stateHandlers = {
       flipPageForward();
       photoPreviewScreen.classList.remove("active");
 
-      
-
       currentAppState = AppState.PHOTO_REVIEW;
       sendTTT(LightingScene.COMIC_BOOK);
       // transitionAppState(
@@ -634,7 +628,6 @@ const stateHandlers = {
       //   AppState.PHOTO_REVIEW,
       //   LightingScene.COMIC_BOOK
       // );
-      
     },
   },
 

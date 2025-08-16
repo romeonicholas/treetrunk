@@ -290,10 +290,10 @@ body {
 
 #selfie-cutout {
   position: absolute;
-  left: 700px;
-  top: 720px;
-  width: 930px;
-  height: 2976px;
+  left: 810px;
+  top: 850px;
+  width: 800px;
+  height: 2560px;
   transform: scaleX(-1);
   filter: drop-shadow(-20px 0px 60px black);
   z-index: 4;

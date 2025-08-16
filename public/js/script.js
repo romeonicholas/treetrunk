@@ -652,19 +652,15 @@ const stateHandlers = {
 
   [AppState.PHOTO_REVIEW]: {
     left: () => {
-      updatePhotoPreviewScreen();
-      currentAppState = AppState.PHOTO_PREVIEW;
-      sendTTT(LightingScene.PHOTO_PREVIEW);
-      // transitionAppState(
-      //   photoReviewScreen,
-      //   photoPreviewScreen,
-      //   AppState.PHOTO_PREVIEW,
-      //   LightingScene.PHOTO_PREVIEW
-      // );
-      selfieCutout.style.display = "block";
+      //Temporarily unavailable for demo
+      // updatePhotoPreviewScreen();
+      // currentAppState = AppState.PHOTO_PREVIEW;
+      // sendTTT(LightingScene.PHOTO_PREVIEW);
+ 
+      // selfieCutout.style.display = "block";
 
-      photoReviewScreen.classList.remove("active");
-      photoPreviewScreen.classList.add("active");
+      // photoReviewScreen.classList.remove("active");
+      // photoPreviewScreen.classList.add("active");
     },
     right: () => {
       figureSelectScreen.classList.add("active");

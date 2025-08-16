@@ -42,6 +42,7 @@ function createFigureConfig(name, figurePath) {
     const filePatterns = {
       cutout: /^cutout\.webp$/i,
       cutoutPNG: /^cutout\.png$/i,
+      cutoutComingSoon: /^cutout_coming_soon\.webp$/i,
       text: /^text\.webp$/i,
       background: /^background\.webp$/i,
       cover: /^cover\.webp$/i,
@@ -88,6 +89,7 @@ function createFigureConfig(name, figurePath) {
       name: name,
       cutout: figureFiles.cutout,
       cutoutPNG: figureFiles.cutoutPNG,
+      cutoutComingSoon: figureFiles.cutoutComingSoon,
       text: figureFiles.text,
       background: figureFiles.background,
       cover: figureFiles.cover,

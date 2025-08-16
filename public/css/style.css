@@ -294,6 +294,8 @@ body {
   top: 720px;
   width: 930px;
   height: 2976px;
+  transform: scaleX(-1);
+  filter: drop-shadow(-20px 0px 60px black);
   z-index: 4;
 }
 
@@ -357,4 +359,8 @@ body {
 .show {
   opacity: 1;
   visibility: visible;
+}
+
+.fast-fade {
+  transition: opacity 0.1s !important;
 }

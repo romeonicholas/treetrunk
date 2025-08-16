@@ -408,8 +408,9 @@ function showCountdownTimer() {
 
 function updatePhotoPreviewScreen() {
   photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
+  selfieCutout.style.display = "block";
   selfieCutout.src = figureData[figureIndex].cutout;
-
+  countdown.src = "";
   // spinner.style.display = "none";
   photoCanvas.style.display = "none";
 
@@ -543,14 +544,17 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      playSFX(coverpageSFX);
-      loadPages();
-      transitionAppState(
-        figureSelectScreen,
-        comicBookScreen,
-        AppState.COMIC_BOOK,
-        LightingScene.COMIC_BOOK
-      );
+      if (figureData[figureIndex] === 0) {
+        playSFX(coverpageSFX);
+        loadPages();
+        transitionAppState(
+          figureSelectScreen,
+          comicBookScreen,
+          AppState.COMIC_BOOK,
+          LightingScene.COMIC_BOOK
+        );
+      }
+
     },
   },
 
@@ -563,18 +567,24 @@ const stateHandlers = {
           AppState.FIGURE_SELECT,
           LightingScene.FIGURE_SELECT
         );
+      } else if (currentPage >= figureData[figureIndex].pages.length - 2) {
+        stopWebcam();
+        flipPageBackward();
       } else {
         flipPageBackward();
       }
     },
     right: () => {
-      if (currentPage >= figureData[figureIndex].pages.length - 2) {
+
+      if (currentPage == figureData[figureIndex].pages.length - 2) {
+        console.log("prepped photo preview")
         updatePhotoPreviewScreen();
       }
-      if (currentPage >= figureData[figureIndex].pages.length - 1) {
-        updatePhotoPreviewScreen();
-        flipPageForward();
 
+      if (currentPage >= figureData[figureIndex].pages.length - 1) {
+      // updatePhotoPreviewScreen();
+        flipPageForward();
+        
         // transitionAppState(
         //   comicBookScreen,
         //   photoPreviewScreen,
@@ -600,9 +610,9 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      stopWebcam();
       currentAppState = AppState.COMIC_BOOK;
       sendTTT(LightingScene.COMIC_BOOK);
+      flipPageBackward();
       // transitionAppState(
       //   photoPreviewScreen,
       //   comicBookScreen,
@@ -616,9 +626,14 @@ const stateHandlers = {
       await showCountdownTimer();
       latestPhotoFilename = await capturePhoto();
       await updatePhotoReviewScreen(latestPhotoFilename);
+      setTimeout(() => {
+        selfieCutout.style.display = "none";
+        countdown.src = "";
+      }, 500);
       photoReviewScreen.classList.add("active");
-      flipPageForward();
-      photoPreviewScreen.classList.remove("active");
+        flipPageForward();
+      // photoPreviewScreen.classList.remove("active");
+      // comicBookScreen.classList.remove("active");
 
       currentAppState = AppState.PHOTO_REVIEW;
       sendTTT(LightingScene.COMIC_BOOK);
@@ -648,16 +663,38 @@ const stateHandlers = {
       //   AppState.PHOTO_PREVIEW,
       //   LightingScene.PHOTO_PREVIEW
       // );
-      comicBookScreen.classList.remove("active");
+      selfieCutout.style.display = "block";
+
+      photoReviewScreen.classList.remove("active");
       photoPreviewScreen.classList.add("active");
     },
     right: () => {
-      transitionAppState(
-        photoReviewScreen,
-        figureSelectScreen,
-        AppState.FIGURE_SELECT,
-        LightingScene.FIGURE_SELECT
-      );
+      figureSelectScreen.classList.add("active");
+
+      comicBookScreen.classList.add(
+        "fast-fade"
+      )
+      photoPreviewScreen.classList.add("fast-fade");
+
+      comicBookScreen.classList.remove("active");
+      photoPreviewScreen.classList.remove("active");
+
+      setTimeout(() => {
+        comicBookScreen.classList.remove("fast-fade");
+        photoPreviewScreen.classList.remove("fast-fade");
+      }, 120);
+
+      photoReviewScreen.classList.remove("active");
+
+      currentAppState = AppState.FIGURE_SELECT;
+      sendTTT(LightingScene.FIGURE_SELECT);
+
+      // transitionAppState(
+      //   photoReviewScreen,
+      //   figureSelectScreen,
+      //   AppState.FIGURE_SELECT,
+      //   LightingScene.FIGURE_SELECT
+      // );
     },
     enter: () => {
       // transitionAppState(

@@ -3,10 +3,14 @@
     <% figureData.forEach((figure, index) => { %>
     <div class="figure-transform-wrapper">
       <div class="figure-scale-wrapper">
-        <img src="<%= figure.cutout %>" />
+        <% if (figure.name === "chouteau_yvonne") { %>
+          <img src="<%= figure.cutout %>" />
+        <% } else { %>    
+          <img src="<%= figure.cutoutComingSoon %>  " />
+        <% } %>
       </div>
     </div>
-    <% }); %>
+    %>
   </div>
 
   <div id="text-carousel" class="text-carousel-container show">

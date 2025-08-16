@@ -589,12 +589,12 @@ const stateHandlers = {
       }
     },
     enter: () => {
-      transitionAppState(
-        comicBookScreen,
-        figureSelectScreen,
-        AppState.FIGURE_SELECT,
-        LightingScene.FIGURE_SELECT
-      );
+      // transitionAppState(
+      //   comicBookScreen,
+      //   figureSelectScreen,
+      //   AppState.FIGURE_SELECT,
+      //   LightingScene.FIGURE_SELECT
+      // );
     },
   },
 
@@ -660,12 +660,12 @@ const stateHandlers = {
       );
     },
     enter: () => {
-      transitionAppState(
-        photoReviewScreen,
-        figureSelectScreen,
-        AppState.FIGURE_SELECT,
-        LightingScene.FIGURE_SELECT
-      );
+      // transitionAppState(
+      //   photoReviewScreen,
+      //   figureSelectScreen,
+      //   AppState.FIGURE_SELECT,
+      //   LightingScene.FIGURE_SELECT
+      // );
     },
   },
 };

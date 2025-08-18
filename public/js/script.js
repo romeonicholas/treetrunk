@@ -544,7 +544,7 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if (figureIndex == 0) {
+      if ([0, 6].includes(figureIndex)) {
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(
@@ -656,9 +656,7 @@ const stateHandlers = {
       // updatePhotoPreviewScreen();
       // currentAppState = AppState.PHOTO_PREVIEW;
       // sendTTT(LightingScene.PHOTO_PREVIEW);
- 
       // selfieCutout.style.display = "block";
-
       // photoReviewScreen.classList.remove("active");
       // photoPreviewScreen.classList.add("active");
     },

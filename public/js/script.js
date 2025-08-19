@@ -544,7 +544,7 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if ([0, 6].includes(figureIndex)) {
+      if ([0, 6, 1].includes(figureIndex)) {
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(

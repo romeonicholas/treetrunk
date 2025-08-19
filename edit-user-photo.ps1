@@ -13,4 +13,4 @@ param(
 # gmic $originalFilepath -rotate -90 -rescale2d 1800,3200 -output $editedFilepath
 # gmic $framePath $editedFilepath -blend alpha,1,180,360 -output $editedFilepath
 
-gmic $originalFilepath -rotate -90 -expand x,108 -expand y,192 -shift 0,22 $overlayPath -blend alpha -output $editedFilepath
+gmic $originalFilepath -rotate -90 -expand x,108 -expand y,192 -shift 0,24 $overlayPath -blend alpha -output $editedFilepath

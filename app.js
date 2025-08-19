@@ -10,7 +10,7 @@ import { scanFigureData } from "./utils/figureScanner.js";
 
 dotenv.config();
 
-const HOST = process.env.HOST || "localhost";
+const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 3000;
 
 const app = express();
@@ -63,6 +63,6 @@ const cleanup = () => {
 process.on("SIGINT", cleanup);
 process.on("SIGTERM", cleanup);
 
-httpServer.listen(PORT, () => {
-  console.log(`👋 Started server on port ${PORT}`);
+httpServer.listen(PORT, HOST, () => {
+  console.log(`👋 Started server on ${HOST}:${PORT}`);
 });

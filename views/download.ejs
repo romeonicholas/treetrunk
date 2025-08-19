@@ -165,15 +165,32 @@
         alt="Family Discovery Center Logo"
         class="logo"
       />
-      <p class="instruction">To save your selfie, tap and hold on the image.</p>
+      <p class="instruction">Don't forget to save your selfie before leaving the page!</p>
 
       <div class="selfie-box">
         <img src="<%= imagePath %>" alt="Your Selfie" class="selfie" />
       </div>
 
-      <p class="hashtag">#FirstAmericansMuseum</p>
+      <p class="hashtag">#famok | <a href="https://famok.org">Visit the FAM website</a></p>
 
-      <p class="expiration">This page automatically expires on 9/29/2025</p>
+      <p class="expiration">This page automatically expires on <span id="expiration-date"></span></p>
     </div>
+    <script>
+      let isMobile = {
+        Android: function() {return navigator.userAgent.match(/Android/i);},
+        iOS: function() {return navigator.userAgent.match(/iPhone|iPad|iPod/i);},
+      };
+      if (isMobile.Android()) {
+        document.querySelector('.instruction').textContent =
+          'Save your selfie! Tap and hold on the image and select "Download Image".';
+      } else if (isMobile.iOS()) {
+        document.querySelector('.instruction').textContent =
+          'Save your selfie! Tap and hold on the image and select "Save to Photos".';
+      }
+
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 2);
+      document.getElementById('expiration-date').textContent = expirationDate.toLocaleDateString();
+    </script>
   </body>
 </html>

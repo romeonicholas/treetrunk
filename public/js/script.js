@@ -313,7 +313,7 @@ function loadPages() {
   });
 
   const previewImg = document.createElement("img");
-  previewImg.src = currentFigure.selfiePreview;
+  previewImg.src = currentFigure.selfiePreviewWithCutout;
   previewImg.classList.add("comic-page");
   previewImg.style.zIndex = 12 - index;
   index++;
@@ -407,9 +407,9 @@ function showCountdownTimer() {
 }
 
 function updatePhotoPreviewScreen() {
-  photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
-  selfieCutout.style.display = "block";
-  selfieCutout.src = figureData[figureIndex].cutout;
+  // photoPreviewBackground.src = figureData[figureIndex].selfiePreview;
+  // selfieCutout.style.display = "block";
+  // selfieCutout.src = figureData[figureIndex].cutout;
   countdown.src = "";
   // spinner.style.display = "none";
   photoCanvas.style.display = "none";
@@ -625,7 +625,7 @@ const stateHandlers = {
       latestPhotoFilename = await capturePhoto();
       await updatePhotoReviewScreen(latestPhotoFilename);
       setTimeout(() => {
-        selfieCutout.style.display = "none";
+        // selfieCutout.style.display = "none";
         countdown.src = "";
       }, 500);
       photoReviewScreen.classList.add("active");

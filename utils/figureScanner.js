@@ -47,6 +47,7 @@ function createFigureConfig(name, figurePath) {
       background: /^background\.webp$/i,
       cover: /^cover\.webp$/i,
       selfiePreview: /^selfie_preview\.webp$/i,
+      selfiePreviewWithCutout: /^selfie_preview_with_cutout\.png$/i,
       selfieReview: /^selfie_review\.webp$/i,
       selfieFrame: /^selfie_frame\.webp$/i,
       selfieFramePNG: /^selfie_frame\.png$/i
@@ -95,6 +96,7 @@ function createFigureConfig(name, figurePath) {
       cover: figureFiles.cover,
       pages: pages,
       selfiePreview: figureFiles.selfiePreview,
+      selfiePreviewWithCutout: figureFiles.selfiePreviewWithCutout,
       selfieReview: figureFiles.selfieReview,
       selfieFrame: figureFiles.selfieFrame,
       selfieFramePNG: figureFiles.selfieFramePNG,

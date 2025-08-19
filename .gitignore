@@ -2,5 +2,6 @@ node_modules
 .DS_Store
 /public/originalUserPhotos
 /public/editedUserPhotos
+/public/editedReviewPage
 /cameratest.html
 .env

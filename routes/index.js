@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 import { fileURLToPath } from "url";
-// import figureData from "../public/js/figureData.js";
+import QRCode from "qrcode";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,16 +27,26 @@ router.post("/save-photo", (req, res) => {
     "../public/editedUserPhotos",
     filename
   );
-
-  fs.mkdirSync(path.dirname(originalFilepath), { recursive: true });
-
+  const editedReviewPageFolder = path.join(__dirname, "../public/", "/editedReviewPage");
   const figureData = req.app.locals.figureData;
   const figure = figureData[figureIndex];
+  const figureFolder = path.join(__dirname, "../public/figureResources/", figure.name);
+  const script = path.resolve("./edit-user-photo.ps1");
+  const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${figureFolder}" "${editedReviewPageFolder}"`;
+
   if (!figure) return res.status(400).send("Invalid figure index");
 
-  const overlayPath = path.join(__dirname, "../public", figure.selfieOverlay);
-  const script = path.resolve("./edit-user-photo.ps1");
-  const command = `powershell -ExecutionPolicy Bypass -File "${script}" "${originalFilepath}" "${editedFilepath}" "${overlayPath}"`;
+  QRCode.toFile(`${editedReviewPageFolder}/latest_qr.png`, `http://10.65.0.1:4000/download/${filename}`, {
+    color: {
+      dark: "#000000",
+      light: "#c2cae9"
+    },
+    width: 400,
+  }, function (err) {
+    if (err) {
+      console.error("Failed to generate QR code:", err);
+    }
+  });
 
   fs.writeFile(originalFilepath, buffer, (err) => {
     if (err) return res.status(500).send("Failed to save");

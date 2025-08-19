@@ -15,11 +15,8 @@
       }
 
       :root {
-        --pad: 20px;
-        --gap: 20px;
         --text: #121212;
         --muted: #666;
-        --bg: #fff;
       }
 
       html,
@@ -31,43 +28,6 @@
         margin: 0;
         font-family: "Gotham", Arial, sans-serif;
         color: var(--text);
-        background: var(--bg);
-      }
-
-      .page {
-        height: 100dvh;
-        padding-inline: var(--pad);
-        display: grid;
-        grid-template-rows: auto auto auto;
-        gap: var(--gap);
-        place-content: center;
-        max-width: 720px;
-        margin: 0 auto;
-      }
-
-      .lead {
-        font-size: 1rem;
-        margin: 0;
-      }
-
-      .photo {
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-        min-height: 45vh;
-      }
-
-      .photo > img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
-      }
-
-      .hash {
-        margin: 0 0 6px 0;
-        font-size: 1rem;
-        font-weight: 800;
       }
 
       .muted {
@@ -75,28 +35,26 @@
         font-size: 0.8rem;
         margin: 0;
       }
+
     </style>
   </head>
   <body>
-    <main class="page">
-      <p class="lead">
-        Don't forget to save your selfie before leaving the page!
-      </p>
-
-      <div class="photo">
-        <img src="<%= imagePath %>" />
+    <div id="container" style="margin-left: 5dvw;
+    max-width: 90dvw;
+    display: flex;
+    flex-direction: column;align-items:center;">
+      <div id="instructions" style="margin-top:10px;margin-bottom:10px;">Don't forget to save your selfie before leaving the page!</div>
+      <div id="image-container" style="max-height: 80dvh;
+    max-width: inherit;">
+        <img id="image" src="<%= imagePath %>" style="max-height: 80dvh;
+    max-width: inherit;"/>
       </div>
-
-      <footer>
-        <h1 class="hash">
-          #famok | <a href="https://famok.org">Visit the FAM website</a>
-        </h1>
-        <p class="muted">
-          This image is only available on the FAM guest wifi network, and
-          expires on <span id="expiration-date"></span>
-        </p>
-      </footer>
-    </main>
+      <div id="closer">
+        <p>#famok | <a href="https://famok.org">Visit the FAM website</a></p>
+        <p class="muted">This image is only available on the FAM guest wifi network and
+          expires <span id="expiration-date">in two days</span>.</p>
+      </div>
+    </div>
     <script>
       let isMobile = {
         Android: function () {
@@ -107,10 +65,10 @@
         },
       };
       if (isMobile.Android()) {
-        document.querySelector(".lead").textContent =
+        document.getElementById("instructions").textContent =
           'Save your selfie! Tap and hold on the image and select "Download Image".';
       } else if (isMobile.iOS()) {
-        document.querySelector(".lead").textContent =
+        document.getElementById("instructions").textContent =
           'Save your selfie! Tap and hold on the image and select "Save to Photos".';
       }
 

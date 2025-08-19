@@ -66,6 +66,13 @@ router.get("/", (request, response) => {
 
 router.get("/download/:filename", (req, response) => {
   const { filename } = req.params;
+
+  const fullPath = path.join(__dirname, "../public/editedUserPhotos", filename);
+
+  if (!fs.existsSync(fullPath)) {
+    return response.status(404).send("File not found");
+  }
+
   const imagePath = `/editedUserPhotos/${filename}`;
   response.render("download", { imagePath });
 });

@@ -14,6 +14,7 @@ const texts = Array.from(document.querySelectorAll(".carousel-text"));
 const comicBookScreen = document.getElementById("comic-book-screen");
 const comicPages = document.getElementById("comic-pages");
 const pageFlip = document.getElementById("page-flip");
+const comicFooter = document.getElementById("comic-footer");
 
 // Photo Preview Elements //
 
@@ -26,6 +27,7 @@ const countdown = document.getElementById("countdown");
 const selfieCutout = document.getElementById("selfie-cutout");
 const video = document.getElementById("video-element");
 const photoCanvas = document.getElementById("canvas-element");
+const photoPreviewFooter = document.getElementById("photo-preview-footer");
 
 // Photo Review Elements //
 
@@ -35,6 +37,7 @@ const photoReviewBackground = document.getElementById(
 );
 const qrCodeCanvas = document.getElementById("qr-code");
 const editedPhoto = document.getElementById("edited-photo");
+const photoReviewFooter = document.getElementById("photo-review-footer");
 
 // Functions //
 
@@ -544,7 +547,7 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if ([0, 6, 1].includes(figureIndex)) {
+      if ([0, 1, 4, 5, 6].includes(figureIndex)) {
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(
@@ -566,8 +569,11 @@ const stateHandlers = {
           AppState.FIGURE_SELECT,
           LightingScene.FIGURE_SELECT
         );
+        photoCanvas.style.display = "none";
       } else if (currentPage >= figureData[figureIndex].pages.length - 2) {
         stopWebcam();
+        
+
         flipPageBackward();
       } else {
         flipPageBackward();
@@ -577,11 +583,14 @@ const stateHandlers = {
       if (currentPage == figureData[figureIndex].pages.length - 2) {
         console.log("prepped photo preview");
         updatePhotoPreviewScreen();
+        photoPreviewFooter.style.display = "block";
       }
 
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
         // updatePhotoPreviewScreen();
         flipPageForward();
+        photoPreviewFooter.style.display = "block";
+
 
         // transitionAppState(
         //   comicBookScreen,
@@ -608,9 +617,13 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      currentAppState = AppState.COMIC_BOOK;
-      sendTTT(LightingScene.COMIC_BOOK);
-      flipPageBackward();
+      // currentAppState = AppState.COMIC_BOOK;
+      // sendTTT(LightingScene.COMIC_BOOK);
+      // flipPageBackward();
+      // stopWebcam();
+      // photoPreviewFooter.style.display = "none";
+      // photoCanvas.style.display = "none";
+      
       // transitionAppState(
       //   photoPreviewScreen,
       //   comicBookScreen,

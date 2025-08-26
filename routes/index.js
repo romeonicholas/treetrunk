@@ -10,6 +10,10 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
+router.get("/lighting", (req, res) => {
+  res.render("lighting");
+});
+
 router.post("/save-photo", (req, res) => {
   const { image, figureIndex } = req.body;
   const matches = image.match(/^data:image\/png;base64,(.+)$/);

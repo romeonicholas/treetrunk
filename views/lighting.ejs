@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="icon" href="data:," />
+</head>
+
+<body>
+    <video id="webcam" autoplay playsinline style="
+    position: absolute;
+    top: 2800px;
+    left: 2000px;
+    width: 119vw;
+    height: auto;
+    transform-origin: top left;
+    transform: scaleX(-1) rotate(-90deg);"></video>
+    <button id="capture">Capture JPG</button>
+    <button id="change-lighting">Change Lighting</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div id="info">Waiting for webcam...</div>
+    <script>
+        const video = document.getElementById('webcam');
+        const info = document.getElementById('info');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture');
+        const lightingBtn = document.getElementById('change-lighting');
+
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+                aspectRatio: 9 / 16
+            }
+        })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    const w = video.videoWidth;
+                    const h = video.videoHeight;
+                    const aspect = (w / h).toFixed(2);
+                    info.textContent = `Resolution: ${w} x ${h} | Aspect Ratio: ${aspect}:1`;
+                };
+            })
+            .catch(err => {
+                info.textContent = 'Error accessing webcam: ' + err.message;
+            });
+
+        captureBtn.onclick = function () {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const jpgData = canvas.toDataURL('image/jpeg');
+            const link = document.createElement('a');
+            link.href = jpgData;
+            link.download = 'webcam-capture.jpg';
+            link.click();
+        };
+
+        let scene = "0";
+        lightingBtn.onclick = function () {
+            scene++;
+            console.log("Changing lighting to scene " + scene);
+            if (scene > "3") {
+                scene = "1";
+            }
+            fetch("/send-ttt", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ value: scene }),
+            }).catch((error) => {
+                console.error("Failed to send TTT message:", error);
+            });
+        }
+    </script>
+</body>
+
+</html>

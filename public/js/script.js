@@ -1,5 +1,11 @@
 const figureData = window.figureData;
 
+let inactivityTimeout;
+let inactivityConfirmationTimeout;
+const INACTIVITY_THRESHOLD = 30000;
+const INACTIVITY_CONFIRMATION_THRESHOLD = 10000;
+let isTimerActive = false;
+
 const figureSelectScreen = document.getElementById("figure-select-screen");
 const figures = Array.from(
   document.querySelectorAll(".figure-transform-wrapper")
@@ -39,6 +45,31 @@ function sendTTT(value) {
   }).catch((error) => {
     console.error("Failed to send TTT message:", error);
   });
+}
+
+function startInactivityTimer() {
+  if (!isTimerActive) return;
+
+  clearTimeout(inactivityTimeout);
+  inactivityTimeout = setTimeout(showInactivityScreen, INACTIVITY_THRESHOLD);
+}
+
+function startInactivityConfirmationTimer() {
+  clearTimeout(inactivityConfirmationTimeout);
+  inactivityConfirmationTimeout = setTimeout(returnToFigureSelection, INACTIVITY_CONFIRMATION_THRESHOLD);
+}
+
+function showInactivityScreen() {
+  const inactivityScreen = document.getElementById("inactivity-screen");
+  inactivityScreen.style.opacity = 1;
+  startInactivityConfirmationTimer();
+}
+
+function dismissInactivityScreen() {
+  const inactivityScreen = document.getElementById("inactivity-screen");
+  inactivityScreen.style.opacity = 0;
+  clearTimeout(inactivityConfirmationTimeout);
+  startInactivityTimer();
 }
 
 const figurecount = figures.length;
@@ -342,7 +373,7 @@ function flipPageForward() {
 function flipPageBackward() {
   if (isAnimating) return;
   isAnimating = true;
-  
+
   if (currentPage > 0) {
     playSFX(pageFlipSFX);
 

@@ -555,7 +555,7 @@ const stateHandlers = {
       if (currentPage == figureData[figureIndex].pages.length - 2) {
         console.log("prepped photo preview");
         updatePhotoPreviewScreen();
-        photoPreviewFooter.style.display = "block";
+        // photoPreviewFooter.style.display = "block";
       }
 
       if (currentPage >= figureData[figureIndex].pages.length - 1) {
@@ -589,11 +589,11 @@ const stateHandlers = {
 
   [AppState.PHOTO_PREVIEW]: {
     left: () => {
-      // currentAppState = AppState.COMIC_BOOK;
-      // sendTTT(LightingScene.COMIC_BOOK);
-      // flipPageBackward();
+      currentAppState = AppState.COMIC_BOOK;
+      sendTTT(LightingScene.COMIC_BOOK);
+      flipPageBackward();
       // stopWebcam();
-      // photoPreviewFooter.style.display = "none";
+      photoPreviewFooter.style.display = "none";
       // photoCanvas.style.display = "none";
       
       // transitionAppState(

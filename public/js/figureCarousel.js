@@ -8,7 +8,7 @@ function getDiff(i, center) {
 const Direction = {
   LEFT: Symbol("left"),
   RIGHT: Symbol("right"),
-  NONE: Symbol("none"), // For first page load
+  NONE: Symbol("none"),
 };
 
 const TransformClass = {

@@ -38,7 +38,6 @@ function createFigureConfig(name, figurePath) {
   try {
     const files = fs.readdirSync(figurePath);
 
-    // Expected file patterns
     const filePatterns = {
       cutout: /^cutout\.webp$/i,
       cutoutPNG: /^cutout\.png$/i,
@@ -53,7 +52,6 @@ function createFigureConfig(name, figurePath) {
       selfieFramePNG: /^selfie_frame\.png$/i
     };
 
-    // Find files matching patterns
     const figureFiles = {};
     for (const [type, pattern] of Object.entries(filePatterns)) {
       const matchingFile = files.find((file) => pattern.test(file));
@@ -62,7 +60,6 @@ function createFigureConfig(name, figurePath) {
       }
     }
 
-    // Find pages (numbered files like page1.webp, page2.webp, etc.)
     const pageFiles = files
       .filter((file) => /^page\d+\.(webp)$/i.test(file))
       .sort((a, b) => {
@@ -81,7 +78,6 @@ function createFigureConfig(name, figurePath) {
     const selfieFramePath = path.join(figurePath, "selfie_frame.png");
     const cutoutPath = path.join(figurePath, "cutout.png");
 
-    // Only run the overlay script if either file does NOT exist
     if (!fs.existsSync(selfieFramePath) || !fs.existsSync(cutoutPath)) {
       execSync(overlayCommand);
     }

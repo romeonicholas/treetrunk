@@ -1,7 +1,4 @@
-// import figureData from "./figureData.js";
 const figureData = window.figureData;
-
-// Figure Select Elements //
 
 const figureSelectScreen = document.getElementById("figure-select-screen");
 const figures = Array.from(
@@ -9,27 +6,20 @@ const figures = Array.from(
 );
 const texts = Array.from(document.querySelectorAll(".carousel-text"));
 
-// Comic Book Elements //
-
 const comicBookScreen = document.getElementById("comic-book-screen");
 const comicPages = document.getElementById("comic-pages");
 const pageFlip = document.getElementById("page-flip");
 const comicFooter = document.getElementById("comic-footer");
-
-// Photo Preview Elements //
 
 const photoPreviewScreen = document.getElementById("photo-preview-screen");
 const photoPreviewBackground = document.getElementById(
   "photo-preview-background"
 );
 const countdown = document.getElementById("countdown");
-// const spinner = document.getElementById("spinner");
 const selfieCutout = document.getElementById("selfie-cutout");
 const video = document.getElementById("video-element");
 const photoCanvas = document.getElementById("canvas-element");
 const photoPreviewFooter = document.getElementById("photo-preview-footer");
-
-// Photo Review Elements //
 
 const photoReviewScreen = document.getElementById("photo-review-screen");
 const photoReviewBackground = document.getElementById(
@@ -38,8 +28,6 @@ const photoReviewBackground = document.getElementById(
 const qrCodeCanvas = document.getElementById("qr-code");
 const editedPhoto = document.getElementById("edited-photo");
 const photoReviewFooter = document.getElementById("photo-review-footer");
-
-// Functions //
 
 function sendTTT(value) {
   fetch("/send-ttt", {
@@ -53,8 +41,6 @@ function sendTTT(value) {
   });
 }
 
-// Initialization //
-
 const figurecount = figures.length;
 let figureIndex = 0;
 let isAnimating = false;
@@ -63,13 +49,9 @@ let webcamStream = null;
 let latestPhotoFilename = "";
 window.addEventListener("load", initializeWebSocket);
 
-// Audio //
-
 const interactSFX = new Audio("/audio/clickButton.wav");
 const coverpageSFX = new Audio("/audio/showCover.wav");
-
 const pageFlipSFX = new Audio("/audio/pageFlip.wav");
-
 const countdownSFX = new Audio("/audio/countdownBeep.mp3");
 const photoSFX = new Audio("/audio/photoSnap.mp3");
 
@@ -83,8 +65,6 @@ function playInteractSFX() {
   interactSFX.play();
 }
 
-// Carousel Functionality
-
 function getDiff(i, center) {
   let diff = i - center;
   if (diff > figurecount / 2) diff -= figurecount;
@@ -95,7 +75,7 @@ function getDiff(i, center) {
 const Direction = {
   LEFT: Symbol("left"),
   RIGHT: Symbol("right"),
-  NONE: Symbol("none"), // For first page load
+  NONE: Symbol("none"),
 };
 
 const TransformClass = {
@@ -144,9 +124,6 @@ const scaleClasses = [
   "middle-scale",
   "far-scale",
   "off-scale",
-
-  "ease-in",
-  "ease-out",
 ];
 
 const FocusClass = {
@@ -371,7 +348,7 @@ function flipPageBackward() {
     } else {
       pageFlip.classList.add("page-flip-reset");
       pageFlip.classList.add("turned");
-      pageFlip.offsetHeight; // Trigger reflow
+      pageFlip.offsetHeight;
       pageFlip.classList.remove("page-flip-reset");
       pageFlip.classList.remove("turned");
     }
@@ -481,8 +458,6 @@ function capturePhoto() {
     });
 }
 
-// QR Code Generation //
-
 function drawCanvas(qr, scale, border, lightColor, darkColor, qrCodeCanvas) {
   if (scale <= 0 || border < 0) throw new RangeError("Value out of range");
   const width = (qr.size + border * 2) * scale;
@@ -525,8 +500,6 @@ async function updatePhotoReviewScreen(latestPhotoFilename) {
   }
 }
 
-// State Control //
-
 const LightingScene = {
   FIGURE_SELECT: 1,
   COMIC_BOOK: 2,
@@ -541,13 +514,12 @@ const AppState = {
   PHOTO_REVIEW: "PHOTO_REVIEW",
 };
 
-// State transition handlers
 const stateHandlers = {
   [AppState.FIGURE_SELECT]: {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      if ([0, 1, 4, 5, 6].includes(figureIndex)) {
+      // if ([0, 1, 4, 5, 6].includes(figureIndex)) {
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(
@@ -556,7 +528,7 @@ const stateHandlers = {
           AppState.COMIC_BOOK,
           LightingScene.COMIC_BOOK
         );
-      }
+      // }
     },
   },
 
@@ -710,7 +682,6 @@ const stateHandlers = {
   },
 };
 
-// WebSocket connection for Phidget buttons //
 let ws = null;
 
 function initializeWebSocket() {
@@ -774,7 +745,6 @@ async function handleInput(action) {
   }
 }
 
-// Keyboard input handling for development //
 window.addEventListener("keydown", async (e) => {
   switch (e.key) {
     case "ArrowLeft":
@@ -796,7 +766,6 @@ function transitionAppState(currentScreen, newScreen, appState, lightingScene) {
   sendTTT(lightingScene || 0);
 }
 
-// Initial setup //
 updateCarousel();
 sendTTT(LightingScene.FIGURE_SELECT);
 let currentAppState = AppState.FIGURE_SELECT;

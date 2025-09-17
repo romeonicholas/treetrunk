@@ -7,7 +7,6 @@ class UDPService {
     this.messageHandlers = [];
   }
 
-  // Send TTT messages
   sendTTTMessage(value) {
     if (value < 1 || value > 9) {
       console.warn(`Invalid TTT value: ${value}. Must be between 1 and 9.`);
@@ -29,7 +28,6 @@ class UDPService {
     });
   }
 
-  // Start UDP server for receiving messages
   startServer(port = 5005, host = "0.0.0.0") {
     this.server.on("listening", () => {
       const address = this.server.address();
@@ -41,7 +39,6 @@ class UDPService {
         const data = JSON.parse(message.toString());
         console.log(`Received UDP message:`, data);
 
-        // Notify all message handlers
         this.messageHandlers.forEach((handler) => handler(data));
       } catch (err) {
         console.error("Invalid UDP message:", err.message);
@@ -51,12 +48,10 @@ class UDPService {
     this.server.bind(port, host);
   }
 
-  // Add message handler
   onMessage(handler) {
     this.messageHandlers.push(handler);
   }
 
-  // Cleanup
   close() {
     try {
       this.client.close();

@@ -2,7 +2,7 @@ const figureData = window.figureData;
 
 let inactivityTimeout;
 let inactivityConfirmationTimeout;
-const INACTIVITY_THRESHOLD = 60000; 
+const INACTIVITY_THRESHOLD = 50000; 
 const INACTIVITY_CONFIRMATION_THRESHOLD = 10000;
 let isTimerActive = false;
 

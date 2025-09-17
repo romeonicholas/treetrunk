@@ -340,6 +340,9 @@ function flipPageForward() {
 }
 
 function flipPageBackward() {
+  if (isAnimating) return;
+  isAnimating = true;
+  
   if (currentPage > 0) {
     playSFX(pageFlipSFX);
 
@@ -358,6 +361,11 @@ function flipPageBackward() {
     pages[currentPage].classList.add("back");
     pages[currentPage].style.display = "block";
     pages[currentPage].classList.remove("turned");
+
+    setTimeout(() => {
+      pages[currentPage + 1].style.display = "none";
+      isAnimating = false;
+    }, 750);
   }
 }
 
@@ -638,12 +646,13 @@ const stateHandlers = {
   [AppState.PHOTO_REVIEW]: {
     left: () => {
       //Temporarily unavailable for demo
-      // updatePhotoPreviewScreen();
-      // currentAppState = AppState.PHOTO_PREVIEW;
-      // sendTTT(LightingScene.PHOTO_PREVIEW);
+      flipPageBackward();
+      updatePhotoPreviewScreen();
+      currentAppState = AppState.PHOTO_PREVIEW;
+      sendTTT(LightingScene.PHOTO_PREVIEW);
       // selfieCutout.style.display = "block";
-      // photoReviewScreen.classList.remove("active");
-      // photoPreviewScreen.classList.add("active");
+      photoReviewScreen.classList.remove("active");
+      photoPreviewScreen.classList.add("active");
     },
     right: () => {
       figureSelectScreen.classList.add("active");

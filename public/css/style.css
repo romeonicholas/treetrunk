@@ -349,3 +349,7 @@ body {
 .fast-fade {
   transition: opacity 0.1s !important;
 }
+
+#inactivity-screen {
+  z-index: 1000;
+}

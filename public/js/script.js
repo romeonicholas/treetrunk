@@ -2,7 +2,7 @@ const figureData = window.figureData;
 
 let inactivityTimeout;
 let inactivityConfirmationTimeout;
-const INACTIVITY_THRESHOLD = 30000;
+const INACTIVITY_THRESHOLD = 50000; 
 const INACTIVITY_CONFIRMATION_THRESHOLD = 10000;
 let isTimerActive = false;
 
@@ -56,20 +56,41 @@ function startInactivityTimer() {
 
 function startInactivityConfirmationTimer() {
   clearTimeout(inactivityConfirmationTimeout);
-  inactivityConfirmationTimeout = setTimeout(returnToFigureSelection, INACTIVITY_CONFIRMATION_THRESHOLD);
+  inactivityConfirmationTimeout = setTimeout(returnToFigureSelectScreen, INACTIVITY_CONFIRMATION_THRESHOLD);
 }
 
 function showInactivityScreen() {
+  if (!isTimerActive) return;
+
+  previousAppState = currentAppState;
+  currentAppState = AppState.INACTIVE;
+
   const inactivityScreen = document.getElementById("inactivity-screen");
-  inactivityScreen.style.opacity = 1;
+  inactivityScreen.classList.add("active");
   startInactivityConfirmationTimer();
 }
 
 function dismissInactivityScreen() {
+  currentAppState = previousAppState;
   const inactivityScreen = document.getElementById("inactivity-screen");
-  inactivityScreen.style.opacity = 0;
+  inactivityScreen.classList.remove("active");
   clearTimeout(inactivityConfirmationTimeout);
   startInactivityTimer();
+}
+
+function returnToFigureSelectScreen() {
+  figureSelectScreen.classList.add("active");
+  comicBookScreen.classList.remove("active");
+  photoPreviewScreen.classList.remove("active");
+  photoReviewScreen.classList.remove("active");
+  const inactivityScreen = document.getElementById("inactivity-screen");
+  inactivityScreen.classList.remove("active");
+
+  stopWebcam();
+
+  currentAppState = AppState.FIGURE_SELECT;
+  sendTTT(LightingScene.FIGURE_SELECT);
+  isTimerActive = false;
 }
 
 const figurecount = figures.length;
@@ -551,6 +572,7 @@ const AppState = {
   PHOTO_PREVIEW: "PHOTO_PREVIEW",
   PHOTO_COUNTDOWN: "PHOTO_COUNTDOWN",
   PHOTO_REVIEW: "PHOTO_REVIEW",
+  INACTIVE: "INACTIVE",
 };
 
 const stateHandlers = {
@@ -568,6 +590,8 @@ const stateHandlers = {
           LightingScene.COMIC_BOOK
         );
       // }
+        isTimerActive = true;
+        startInactivityTimer();
     },
   },
 
@@ -581,6 +605,7 @@ const stateHandlers = {
           LightingScene.FIGURE_SELECT
         );
         photoCanvas.style.display = "none";
+        isTimerActive = false;
       } else if (currentPage >= figureData[figureIndex].pages.length - 2) {
         stopWebcam();
         
@@ -645,6 +670,9 @@ const stateHandlers = {
     right: () => {},
     enter: async () => {
       currentAppState = AppState.PHOTO_COUNTDOWN;
+      isTimerActive = false;
+
+
       await showCountdownTimer();
       latestPhotoFilename = await capturePhoto();
       await updatePhotoReviewScreen(latestPhotoFilename);
@@ -659,6 +687,8 @@ const stateHandlers = {
 
       currentAppState = AppState.PHOTO_REVIEW;
       sendTTT(LightingScene.COMIC_BOOK);
+      isTimerActive = true;
+      startInactivityTimer();
       // transitionAppState(
       //   photoPreviewScreen,
       //   photoReviewScreen,
@@ -710,6 +740,8 @@ const stateHandlers = {
       //   AppState.FIGURE_SELECT,
       //   LightingScene.FIGURE_SELECT
       // );
+
+      isTimerActive = false;
     },
     enter: () => {
       // transitionAppState(
@@ -718,6 +750,19 @@ const stateHandlers = {
       //   AppState.FIGURE_SELECT,
       //   LightingScene.FIGURE_SELECT
       // );
+    },
+  },
+
+  [AppState.INACTIVE]: {
+    left: () => {
+      dismissInactivityScreen();
+    },
+    right: () => {
+      dismissInactivityScreen();
+    },
+    enter: () => {
+      dismissInactivityScreen();
+      returnToFigureSelectScreen();
     },
   },
 };
@@ -772,12 +817,15 @@ async function handleInput(action) {
   switch (action) {
     case "left":
       handler.left();
+      startInactivityTimer();
       break;
     case "right":
       handler.right();
+      startInactivityTimer();
       break;
     case "enter":
       handler.enter();
+      startInactivityTimer();
       break;
     default:
       console.log("Unknown action:", action);
@@ -789,12 +837,15 @@ window.addEventListener("keydown", async (e) => {
   switch (e.key) {
     case "ArrowLeft":
       handleInput("left");
+      startInactivityTimer();
       break;
     case "ArrowRight":
       handleInput("right");
+      startInactivityTimer();
       break;
     case "Enter":
       handleInput("enter");
+      startInactivityTimer();
       break;
   }
 });
@@ -809,3 +860,4 @@ function transitionAppState(currentScreen, newScreen, appState, lightingScene) {
 updateCarousel();
 sendTTT(LightingScene.FIGURE_SELECT);
 let currentAppState = AppState.FIGURE_SELECT;
+let previousAppState = AppState.FIGURE_SELECT;

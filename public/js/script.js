@@ -580,7 +580,9 @@ const stateHandlers = {
     left: () => prev(),
     right: () => next(),
     enter: () => {
-      // if ([0, 1, 4, 5, 6].includes(figureIndex)) {
+      if (figureIndex == 4) {
+        return;
+      }
         playSFX(coverpageSFX);
         loadPages();
         transitionAppState(
@@ -589,7 +591,6 @@ const stateHandlers = {
           AppState.COMIC_BOOK,
           LightingScene.COMIC_BOOK
         );
-      // }
         isTimerActive = true;
         startInactivityTimer();
     },
